@@ -21,7 +21,6 @@ using ImageGlass.Common.Types;
 using System;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,8 +42,10 @@ public partial class UpdateProvider : IUpdateProvider
             var lastCheckTime = ParseLastCheckTime();
 
             // a fresh offset each read, so same-cadence installs do not all report on the same day
-            var threshold = UpdateConstants.BackgroundCheckInterval
-                + TimeSpan.FromMinutes(Random.Shared.Next(0, UpdateConstants.CheckJitterMinutes));
+            var jitterMinutes = UpdateConstants.CheckJitterMinutes <= 0
+                ? 0
+                : Random.Shared.Next(0, UpdateConstants.CheckJitterMinutes);
+            var threshold = UpdateConstants.BackgroundCheckInterval + TimeSpan.FromMinutes(jitterMinutes);
 
             return (DateTime.UtcNow - lastCheckTime) >= threshold;
         }
@@ -68,21 +69,19 @@ public partial class UpdateProvider : IUpdateProvider
         {
             var result = await CheckForUpdateCoreAsync(isScheduled, ct).ConfigureAwait(false);
 
-            if (isScheduled)
-            {
-                // record the check time
-                Core.Config.AutoUpdate = BHelper.FormatUtcRoundtrip(DateTime.UtcNow);
-            }
+            if (isScheduled) await RememberScheduledCheckAsync().ConfigureAwait(false);
 
             return result;
         }
         catch (OperationCanceledException)
         {
+            if (isScheduled) await RememberScheduledCheckAsync().ConfigureAwait(false);
             return UpdateCheckResult.Failed("Check was cancelled.");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"❌❌❌ {nameof(CheckForUpdateAsync)}: {ex}");
+            if (isScheduled) await RememberScheduledCheckAsync().ConfigureAwait(false);
             return UpdateCheckResult.Failed(ex.Message, ex);
         }
         finally
@@ -103,35 +102,34 @@ public partial class UpdateProvider : IUpdateProvider
         var json = await FetchMetadataAsync(isScheduled, ct).ConfigureAwait(false);
         if (string.IsNullOrEmpty(json))
         {
-            return UpdateCheckResult.Failed("Empty response from update server.");
+            return UpdateCheckResult.Failed("Empty response from GitHub.");
         }
 
-        // parse manifest
-        var ctx = new UpdateManifestJsonContext();
-        var manifest = JsonSerializer.Deserialize(json, ctx.UpdateManifest);
-        if (manifest?.Releases is null)
+        var arch = BHelper.ArchToken;
+        var parsed = GitHubReleaseParser.Parse(json, arch);
+        if (parsed.Release is null)
         {
-            return UpdateCheckResult.Failed("Invalid update manifest format.");
+            return UpdateCheckResult.Failed(parsed.Error ?? "Could not read the GitHub release.");
         }
 
-        // select channel
-        var channel = Core.BuildInfo.UpdateChannel;
-        var release = string.Equals(channel, "stable", StringComparison.OrdinalIgnoreCase)
-            ? manifest.Releases.Stable
-            : manifest.Releases.Beta;
+        if (!string.IsNullOrEmpty(parsed.Sha256Url))
+        {
+            var sidecar = await FetchTextAsync(parsed.Sha256Url, ct).ConfigureAwait(false);
+            parsed = parsed.WithSha256(GitHubReleaseParser.ParseSha256File(sidecar), GitHubReleaseParser.ArtifactKey(arch));
+        }
 
+        var release = parsed.Release;
         if (release is null || string.IsNullOrEmpty(release.Version))
         {
             return UpdateCheckResult.NoUpdate();
         }
 
-        // version comparison - already up-to-date, but keep the release so UI can show its info
+        // already up to date; keep the release so a manual check can show its notes
         if (CompareVersions(Core.BuildInfo.Version, release.Version) <= 0)
         {
             return UpdateCheckResult.NoUpdate(release);
         }
 
-        // user chose to skip this version (an update does exist, so don't surface it as the latest)
         if (string.Equals(release.Version, Core.Config.UpdateSkippedVersion, StringComparison.OrdinalIgnoreCase))
         {
             return UpdateCheckResult.NoUpdate();
@@ -142,17 +140,18 @@ public partial class UpdateProvider : IUpdateProvider
 
 
     /// <summary>
-    /// Fetches the metadata JSON from the update endpoint with size limits.
+    /// Fetches the latest GitHub release JSON. No usage statistics are sent.
     /// </summary>
     private static async Task<string?> FetchMetadataAsync(bool isScheduled, CancellationToken ct)
     {
+        _ = isScheduled;
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeoutCts.CancelAfter(UpdateConstants.MetadataTimeout);
 
         using var request = new HttpRequestMessage(HttpMethod.Get, UpdateConstants.MetadataUrl);
-
-        // set per request: the value varies per check, so it cannot live on the shared client
-        request.Headers.UserAgent.ParseAdd(UsageStatsAgent.Build(isScheduled));
+        request.Headers.UserAgent.ParseAdd(ProductUserAgent());
+        request.Headers.Accept.ParseAdd("application/vnd.github+json");
+        request.Headers.TryAddWithoutValidation("X-GitHub-Api-Version", "2022-11-28");
 
         using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeoutCts.Token)
             .ConfigureAwait(false);
@@ -192,22 +191,53 @@ public partial class UpdateProvider : IUpdateProvider
     /// </summary>
     internal static int CompareVersions(string currentVersion, string remoteVersion)
     {
-        var currentNumeric = currentVersion.Split('-')[0];
-        var remoteNumeric = remoteVersion.Split('-')[0];
+        return GitHubReleaseParser.CompareVersions(currentVersion, remoteVersion);
+    }
 
-        var current = Version.Parse(currentNumeric);
-        var remote = Version.Parse(remoteNumeric);
 
-        return remote.CompareTo(current);
+    private static async Task<string?> FetchTextAsync(string url, CancellationToken ct)
+    {
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeoutCts.CancelAfter(UpdateConstants.MetadataTimeout);
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.UserAgent.ParseAdd(ProductUserAgent());
+        using var response = await _httpClient.SendAsync(request, timeoutCts.Token).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync(timeoutCts.Token).ConfigureAwait(false);
+    }
+
+
+    /// <summary>
+    /// A failed or finished scheduled check still counts, so a down network is not retried on every launch.
+    /// </summary>
+    private static async Task RememberScheduledCheckAsync()
+    {
+        try
+        {
+            Core.Config.AutoUpdate = BHelper.FormatUtcRoundtrip(DateTime.UtcNow);
+            _ = await Core.Config.SaveAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"❌❌❌ {nameof(RememberScheduledCheckAsync)}: {ex}");
+        }
+    }
+
+
+    internal static string ProductUserAgent()
+    {
+        var version = Core.BuildInfo?.Version;
+        if (string.IsNullOrWhiteSpace(version)) version = "0.0.0.0";
+        return $"{BHelper.AppName}/{version}";
     }
 
 
     private static HttpClient CreateHttpClient()
     {
-        // no default User-Agent: every request sets its own (see FetchMetadataAsync)
         return new HttpClient
         {
-            Timeout = UpdateConstants.MetadataTimeout,
+            Timeout = UpdateConstants.DownloadTimeout,
         };
     }
 

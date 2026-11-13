@@ -36,7 +36,7 @@ namespace ImageGlass.Common.Windows;
 /// </summary>
 public abstract class SettingsPageView : PhControl
 {
-    private const string TRANSITIONS_URL = "https://imageglass.org/effects";
+    private const string TRANSITIONS_URL = LiteGlassLanguage.ProjectUrl;
 
 
     /// <summary>
@@ -136,14 +136,10 @@ public abstract class SettingsPageView : PhControl
     /// </summary>
     protected void ProGate(ConfigId id, Control? badge, params Control?[] inputs)
     {
-        if (!Config.IsConfigProGated(id)) return;
-
-        if (badge is not null) badge.IsVisible = true;
-
-        foreach (var input in inputs)
-        {
-            if (input is not null) input.IsEnabled = false;
-        }
+        // LiteGlass does not sell or lock features.
+        _ = id;
+        if (badge is not null) badge.IsVisible = false;
+        _ = inputs;
     }
 
 

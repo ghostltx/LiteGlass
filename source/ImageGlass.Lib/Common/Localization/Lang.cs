@@ -515,18 +515,18 @@ public class Lang
         new(LangId._UnhandledException_Description, "Unhandled exception has occurred. If you click Continue, the application will ignore this error and attempt to continue. If you click Quit, the application will close immediately."), // v9.0
         new(LangId._DoNotShowThisMessageAgain, "Do not show this message again"), // v9.0
         new(LangId._IncompatibleConfig, "Incompatible settings file"),
-        new(LangId._IncompatibleConfig_Description, "Your settings file was created by an older version of ImageGlass and is not compatible with this version. It will be reset to the default settings.\r\n\r\nDo you want to continue?"),
-        new(LangId._IncompatibleConfig_BackupNote, "Please manually back up your settings file before continuing if you want to keep it. Choosing No will quit ImageGlass without changing the file."),
+        new(LangId._IncompatibleConfig_Description, "Your settings file was created by an older version of LiteGlass and is not compatible with this version. It will be reset to the default settings.\r\n\r\nDo you want to continue?"),
+        new(LangId._IncompatibleConfig_BackupNote, "Please manually back up your settings file before continuing if you want to keep it. Choosing No will quit LiteGlass without changing the file."),
         new(LangId._IncompatibleTheme, "Incompatible theme packs"),
-        new(LangId._IncompatibleTheme_Description, "Your theme packs were created for the previous version of ImageGlass and are not compatible with this version."),
+        new(LangId._IncompatibleTheme_Description, "Your theme packs were created for the previous version of LiteGlass and are not compatible with this version."),
         new(LangId._IncompatibleLanguage, "Incompatible language packs"),
-        new(LangId._IncompatibleLanguage_Description, "Your language packs were created for the previous version of ImageGlass and are not compatible with this version."),
+        new(LangId._IncompatibleLanguage_Description, "Your language packs were created for the previous version of LiteGlass and are not compatible with this version."),
         new(LangId._CreatingFile, "Creating a temporary image file…"), //v9.0
         new(LangId._CreatingFileError, "Could not create temporary image file"), //v9.0
         new(LangId._NotSupported, "Unsupported format"), //v9.0
 
         new(LangId._InvalidAction, "Invalid action"), //v9.0
-        new(LangId._InvalidAction_Transformation, "ImageGlass does not support rotation, flipping for this image."), //v9.0
+        new(LangId._InvalidAction_Transformation, "LiteGlass does not support rotation, flipping for this image."), //v9.0
 
         new(LangId._UserAction_Win32ExeError, "Cannot execute command '{0}'. Make sure the name is correct."), // v9.0
 
@@ -723,7 +723,7 @@ public class Lang
         new(LangId.Menu_MnuNewWindow_Error, "Cannot open new window because only one instance is allowed"), //v7.0
         new(LangId.Menu_MnuSave, "Save"), //v8.1
         new(LangId.Menu_MnuSave_Confirm, "Are you sure you want to override this image?"), //v9.0
-        new(LangId.Menu_MnuSave_ConfirmDescription, "ImageGlass is not a professional photo editor, please be aware of losing quality, metadata, layers,… when saving your image."), //v9.0
+        new(LangId.Menu_MnuSave_ConfirmDescription, "LiteGlass is not a professional photo editor, please be aware of losing quality, metadata, layers,… when saving your image."), //v9.0
         new(LangId.Menu_MnuSave_Saving, "Saving image…"), //v9.0
         new(LangId.Menu_MnuSave_Success, "Image is saved"), //v9.0
         new(LangId.Menu_MnuSave_Error, "Could not save image"), //v9.0
@@ -732,7 +732,7 @@ public class Lang
 
         new(LangId.Menu_MnuOpenWith, "Open with…"), //v7.6
         new(LangId.Menu_MnuEdit, "Edit image {0}…"), //v3.0,
-        new(LangId.Menu_MnuEdit_AppNotFound, "Could not find the associated app for editing. You can assign an app for editing this format in ImageGlass Settings > Edit."), //v9.0
+        new(LangId.Menu_MnuEdit_AppNotFound, "Could not find the associated app for editing. You can assign an app for editing this format in LiteGlass Settings > Edit."), //v9.0
         new(LangId.Menu_MnuPrint, "Print…"), //v3.0
         new(LangId.Menu_MnuPrint_Error, "Could not print image"), //v9.0
         new(LangId.Menu_MnuShare, "Share…"), //v8.6
@@ -878,20 +878,20 @@ public class Lang
         new(LangId.Menu_MnuHelp, "Help"), //v7.0
         new(LangId.Menu_MnuAbout, "About"), //v3.0
 
-        new(LangId.Menu_MnuUpgradeLicense, "Upgrade to Pro"), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_Description, "Get the most out of ImageGlass. Pro unlocks advanced tools, smoother workflows, and priority support."), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_ImportLicense, "Import license file…"), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_RetrieveFromEmail, "Retrieve from email…"), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_BuyOnline, "Buy online…"), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_ViewFeatures, "View Pro features"), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_OutOfScope, "Your {0} license covers ImageGlass {1}, not ImageGlass {2}. Upgrade your license to turn Pro back on."), // v10.0
-        new(LangId.Menu_MnuUpgradeLicense_Expired, "Your {0} license expired on {1}, and ImageGlass has switched to the Classic edition. Purchase a new license or import a renewal to reactivate Pro features."), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_Description, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_ImportLicense, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_RetrieveFromEmail, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_BuyOnline, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_ViewFeatures, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_OutOfScope, "LiteGlass"), // v10.0
+        new(LangId.Menu_MnuUpgradeLicense_Expired, "LiteGlass"), // v10.0
         new(LangId.Menu_MnuUpgradeLicense_ExpiredTitle, "Your license is expired"), // v10.0
         new(LangId.Menu_MnuUpgradeLicense_SwitchToClassic, "Switch to Classic edition"), // v10.0
 
         new(LangId.Menu_MnuManageLicense, "Manage license"), // v10.0
         new(LangId.Menu_MnuManageLicense_ChangeLicense, "Change license file…"), // v10.0
-        new(LangId.Menu_MnuManageLicense_UpgradePlan, "Upgrade plan…"), // v10.0
+        new(LangId.Menu_MnuManageLicense_UpgradePlan, "LiteGlass…"), // v10.0
         new(LangId.Menu_MnuManageLicense_LicensedTo, "Licensed to"), // v10.0
         new(LangId.Menu_MnuManageLicense_Plan, "Plan"), // v10.0
         new(LangId.Menu_MnuManageLicense_Seats, "Seats"), // v10.0
@@ -899,16 +899,16 @@ public class Lang
         new(LangId.Menu_MnuManageLicense_Perpetual, "Perpetual license"), // v10.0
         new(LangId.Menu_MnuManageLicense_LicenseId, "License ID"), // v10.0
         new(LangId.Menu_MnuManageLicense_Source, "Purchased from"), // v10.0
-        new(LangId.Menu_MnuManageLicense_ImportSuccess, "License imported successfully. Restart ImageGlass now?"), // v10.0
+        new(LangId.Menu_MnuManageLicense_ImportSuccess, "License imported successfully. Restart LiteGlass now?"), // v10.0
         new(LangId.Menu_MnuManageLicense_ImportFailed, "Could not import this license file."), // v10.0
-        new(LangId.Menu_MnuManageLicense_ImportExpired, "This license has expired and can no longer activate ImageGlass Pro."), // v10.0
-        new(LangId.Menu_MnuManageLicense_LicenseFileType, "ImageGlass license file"), // v10.0
+        new(LangId.Menu_MnuManageLicense_ImportExpired, "This license has expired and can no longer activate LiteGlass."), // v10.0
+        new(LangId.Menu_MnuManageLicense_LicenseFileType, "LiteGlass license file"), // v10.0
         new(LangId.Menu_MnuManageLicense_ExportLicense, "Export license to file…"), // v10.0
-        new(LangId.Menu_MnuManageLicense_ExportNote, "Save a copy of your license file to unlock Pro in any other installations, on this or another computer. It covers the ImageGlass version line you bought."), // v10.0
+        new(LangId.Menu_MnuManageLicense_ExportNote, "LiteGlass"), // v10.0
         new(LangId.Menu_MnuManageLicense_ExportSuccess, "License file saved."), // v10.0
         new(LangId.Menu_MnuManageLicense_ExportFailed, "Could not save the license file."), // v10.0
 
-        new(LangId.Menu_MnuQuickSetup, "Open ImageGlass Quick Setup"), //v9.0
+        new(LangId.Menu_MnuQuickSetup, "Open LiteGlass Quick Setup"), //v9.0
         new(LangId.Menu_MnuReportIssue, "Report an issue…"), //v3.0
 
         new(LangId.Menu_MnuCheckForUpdate_NewVersion, "A new update is available!"), //v5.0
@@ -922,17 +922,17 @@ public class Lang
         new(LangId.Menu_MnuCheckForUpdate_ReadyToInstall, "Update ready to install"), //v10.0
         new(LangId.Menu_MnuCheckForUpdate_Downloading, "Downloading the update…"), //v10.0
         new(LangId.Menu_MnuCheckForUpdate_Installing, "Installing the update…"), //v10.0
-        new(LangId.Menu_MnuInstallUpdate, "Install update…"), //v10.0
-        new(LangId.Menu_MnuInstallUpdate_Confirm, "ImageGlass will close and reopen to finish the update."), //v10.0
-        new(LangId.Menu_MnuCheckForUpdate_ProFromStore, "Get ImageGlass Pro from Store"), // v10.0
+        new(LangId.Menu_MnuInstallUpdate, "Install update and restart"), //v10.0
+        new(LangId.Menu_MnuInstallUpdate_Confirm, "LiteGlass will close and reopen to finish the update."), //v10.0
+        new(LangId.Menu_MnuCheckForUpdate_ProFromStore, "LiteGlass"), // v10.0
 
         new(LangId.Menu_MnuSetDefaultPhotoViewer, "Set default photo viewer"), //v9.0
-        new(LangId.Menu_MnuSetDefaultPhotoViewer_Success, "You have successfully set ImageGlass as default photo viewer."), //v9.0
-        new(LangId.Menu_MnuSetDefaultPhotoViewer_Error, "Could not set ImageGlass as default photo viewer."), //v9.0
+        new(LangId.Menu_MnuSetDefaultPhotoViewer_Success, "You have successfully set LiteGlass as default photo viewer."), //v9.0
+        new(LangId.Menu_MnuSetDefaultPhotoViewer_Error, "Could not set LiteGlass as default photo viewer."), //v9.0
 
         new(LangId.Menu_MnuRemoveDefaultPhotoViewer, "Remove default photo viewer"), //v9.0
-        new(LangId.Menu_MnuRemoveDefaultPhotoViewer_Success, "ImageGlass is no longer the default photo viewer."), //v9.0
-        new(LangId.Menu_MnuRemoveDefaultPhotoViewer_Error, "Could not remove ImageGlass as the default photo viewer."), //v9.0
+        new(LangId.Menu_MnuRemoveDefaultPhotoViewer_Success, "LiteGlass is no longer the default photo viewer."), //v9.0
+        new(LangId.Menu_MnuRemoveDefaultPhotoViewer_Error, "Could not remove LiteGlass as the default photo viewer."), //v9.0
         #endregion // Main Menu > Help
 
         new(LangId.Menu_MnuExit, "Exit"), //v7.0
@@ -948,7 +948,7 @@ public class Lang
         new(LangId.Settings_UnmanagedSettingReminder, "This is an unmanaged setting, it writes registry entries or files that are not cleaned up automatically. You will need to manually disable it before you uninstall the app."), // v9.1
         new(LangId.Settings_SearchPlaceholder, "Search settings…"), // v10.0
         new(LangId.Settings_AdminLockWarning, "Some settings are managed by your administrator and can't be changed here."), // v10.0
-        new(LangId.Settings_ProFeatureHint, "This is an ImageGlass Pro feature."), // v10.0
+        new(LangId.Settings_ProFeatureHint, "This is an LiteGlass feature."), // v10.0
 
 
         #region Settings > Navbar
@@ -988,7 +988,7 @@ public class Lang
 
         // General > App update
         new(LangId.Settings_AppUpdate, "App update"),
-        new(LangId.Settings_AutoUpdate_Description, "The update check also includes a short anonymous message that helps improve ImageGlass. It contains no name, no account, and no identifier, and nothing about your files. Turning this off stops it completely."),
+        new(LangId.Settings_AutoUpdate_Description, "Once a day, after the first image is shown, LiteGlass asks GitHub if ghostltx/LiteGlass has a newer portable build. Nothing else is sent. Turning this off stops the check completely."),
         new(LangId.Settings_SeeWhatIsSent, "See exactly what is sent…"),
         new(LangId.Settings_EnableAutoInstallUpdate, "Download and install updates automatically"), //v10.0
 
@@ -1038,7 +1038,7 @@ public class Lang
         new(LangId.Settings_EnableHdrToneMapping, "Apply HDR tone mapping to HDR images"),
         new(LangId.Settings_EnableAlwaysApplyColorProfile, "Always apply for image without embedded color profile"),
         new(LangId.Settings_ColorProfile, "Color profile"),
-        new(LangId.Settings_CurrentMonitorProfile_Description, "ImageGlass does not auto-update the color when moving its window between monitors"),
+        new(LangId.Settings_CurrentMonitorProfile_Description, "LiteGlass does not auto-update the color when moving its window between monitors"),
         #endregion // Settings > Tab Image
 
 
@@ -1207,11 +1207,11 @@ public class Lang
         // File type associations > Default photo viewer
         new(LangId.Settings_DefaultPhotoViewer, "Default photo viewer"),
         new(LangId.Settings_AppMenuEntry, "Applications menu"), //v10.0
-        new(LangId.Settings_AppMenuEntry_Description, "Register ImageGlass in your applications menu, so you can launch it from there and set it as your default image viewer."), //v10.0
-        new(LangId.Settings_AppMenuEntry_Success, "ImageGlass has been registered in your applications menu."), //v10.0
-        new(LangId.Settings_AppMenuEntry_RemoveSuccess, "ImageGlass is no longer in your applications menu."), //v10.0
+        new(LangId.Settings_AppMenuEntry_Description, "Register LiteGlass in your applications menu, so you can launch it from there and set it as your default image viewer."), //v10.0
+        new(LangId.Settings_AppMenuEntry_Success, "LiteGlass has been registered in your applications menu."), //v10.0
+        new(LangId.Settings_AppMenuEntry_RemoveSuccess, "LiteGlass is no longer in your applications menu."), //v10.0
         new(LangId.Settings_AppMenuEntry_Error, "Could not update the applications menu."), //v10.0
-        new(LangId.Settings_DefaultPhotoViewer_Description, "Register the supported formats of ImageGlass with Windows. You might need to open the Default apps settings and manually select ImageGlass from the list for it to take effect."),
+        new(LangId.Settings_DefaultPhotoViewer_Description, "Register the supported formats of LiteGlass with Windows. You might need to open the Default apps settings and manually select LiteGlass from the list for it to take effect."),
         new(LangId.Settings_DefaultPhotoViewer_ScopePerMachine, "Scope: all user accounts on this computer (per-machine)."),
         new(LangId.Settings_DefaultPhotoViewer_ScopePerUser, "Scope: your user account only (per-user)."),
         new(LangId.Settings_OpenDefaultAppsSetting, "Open Default apps setting"),
@@ -1243,7 +1243,7 @@ public class Lang
         new(LangId.Settings_Plugins_ViewMetadata, "Plugin information"),
         new(LangId.Settings_Plugins_FolderPath, "Folder"),
         new(LangId.Settings_Plugins_InstallSuccess, "Plugin installed successfully"),
-        new(LangId.Settings_Plugins_DeleteConfirm, "Delete this plugin? This permanently removes it from ImageGlass."),
+        new(LangId.Settings_Plugins_DeleteConfirm, "Delete this plugin? This permanently removes it from LiteGlass."),
         new(LangId.Settings_Plugins_Status, "Status"),
         new(LangId.Settings_Plugins_Enable, "Enable"),
         new(LangId.Settings_Plugins_TrustAndEnable, "Trust and enable"),
@@ -1253,10 +1253,10 @@ public class Lang
         new(LangId.Settings_Plugins_StatusChanged, "File changed"),
         new(LangId.Settings_Plugins_StatusNotLoaded, "Not loaded"),
         new(LangId.Settings_Plugins_TrustTitle, "Enable this plugin?"),
-        new(LangId.Settings_Plugins_TrustPrompt, "\"{0}\" is a native plugin that runs inside ImageGlass with full access to your files and system. Only enable plugins you obtained from a source you trust."),
+        new(LangId.Settings_Plugins_TrustPrompt, "\"{0}\" is a native plugin that runs inside LiteGlass with full access to your files and system. Only enable plugins you obtained from a source you trust."),
         new(LangId.Settings_Plugins_TrustChangedWarning, "This plugin's file has changed since it was last enabled. Only re-enable it if you updated the plugin yourself."),
         new(LangId.Settings_Plugins_EnableToLoad, "Enable the plugin below to load it."),
-        new(LangId.Settings_Plugins_ExtensionsHint, "This plugin can open and save the file types below. Turn off any you would rather leave to ImageGlass or another plugin."),
+        new(LangId.Settings_Plugins_ExtensionsHint, "This plugin can open and save the file types below. Turn off any you would rather leave to LiteGlass or another plugin."),
         new(LangId.Settings_Plugins_FormatsAfterEnable, "Enable this plugin to see and choose the file types it supports."),
         new(LangId.Settings_Plugins_NoFormats, "No file types supported."),
         #endregion // Settings > Tab Plugins
@@ -1424,9 +1424,9 @@ public class Lang
 
         #region Quick setup
 
-        new(LangId.QuickSetup_Title, "ImageGlass Quick Setup" ), //v10.0
+        new(LangId.QuickSetup_Title, "LiteGlass Quick Setup" ), //v10.0
         new(LangId.QuickSetup_StepInfo, "Step {0} of {1}" ), //v10.0
-        new(LangId.QuickSetup_SkipAndLaunch, "Skip this and launch ImageGlass" ), //v10.0
+        new(LangId.QuickSetup_SkipAndLaunch, "Skip this and launch LiteGlass" ), //v10.0
 
         new(LangId.QuickSetup_SelectLanguage, "Display language" ), //v10.0
         new(LangId.QuickSetup_SeeWhatNew, "See what's new in this version…" ), //v10.0
@@ -1436,10 +1436,16 @@ public class Lang
         new(LangId.QuickSetup_SettingsWillBeApplied, "Settings will be applied:" ), //v10.0
         new(LangId.QuickSetup_SettingProfileDescription, "To modify these settings later, simply open the app Settings." ), //v10.0
 
-        new(LangId.QuickSetup_RegisterImageFormats, "Do you want to register the supported image formats of ImageGlass with Windows? You can unregister it later in Settings > File type associations." ), //v10.0
+        new(LangId.QuickSetup_RegisterImageFormats, "Do you want to register the supported image formats of LiteGlass with Windows? You can unregister it later in Settings > File type associations." ), //v10.0
 
         new(LangId.QuickSetup_ConfirmCloseProcess, "Are you ready to apply the settings?" ), //v10.0
-        new(LangId.QuickSetup_ConfirmCloseProcess_Description, "All other running instances of ImageGlass will be closed before the settings are saved." ), //v10.0
+        new(LangId.QuickSetup_ConfirmCloseProcess_Description, "All other running instances of LiteGlass will be closed before the settings are saved." ), //v10.0
+        new(LangId.LiteGlass_AboutMaintainer, "Maintainer"),
+        new(LangId.LiteGlass_AiNotPdf, "This Illustrator file has no PDF-compatible content. LiteGlass renders the PDF stream Illustrator embeds by default, not legacy PostScript."),
+        new(LangId.LiteGlass_EpsNoPreview, "This EPS file has no PDF stream and no TIFF or WMF preview. LiteGlass does not run PostScript."),
+        new(LangId.LiteGlass_DwgMissing, "This DWG file could not be opened because dwg2SVG from LibreDWG was not found next to LiteGlass."),
+        new(LangId.LiteGlass_DwgTimeout, "Rendering this DWG file took too long and was stopped so LiteGlass would not hang."),
+        new(LangId.LiteGlass_DwgFailed, "This DWG file could not be rendered."),
 
         #endregion // Quick setup
 

@@ -29,12 +29,12 @@ namespace ImageGlass.Common.Windows;
 
 public partial class LanguageSettingsView : SettingsPageView
 {
-    private const string LANGUAGES_URL = "https://imageglass.org/languages";
+    private const string LANGUAGES_URL = LiteGlassLanguage.ProjectUrl;
 
     private List<Lang> _langs = [];
     private bool _isPopulating;
 
-    private static FilePickerFileType LangPackFileType => new("ImageGlass language pack")
+    private static FilePickerFileType LangPackFileType => new("LiteGlass language pack")
     {
         Patterns = ["*.iglang.json"],
     };

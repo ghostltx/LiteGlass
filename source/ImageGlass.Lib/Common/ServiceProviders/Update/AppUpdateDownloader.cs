@@ -313,6 +313,7 @@ internal static class AppUpdateDownloader
             TryDelete(partPath);
 
             using var request = new HttpRequestMessage(HttpMethod.Get, artifact.Url);
+            request.Headers.UserAgent.ParseAdd(UpdateProvider.ProductUserAgent());
             using var response = await client
                 .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
                 .ConfigureAwait(false);
@@ -345,6 +346,14 @@ internal static class AppUpdateDownloader
 
                     if (length > 0) progress?.Report(Math.Min(100d, total * 100d / length));
                 }
+            }
+
+            if (!GitHubReleaseParser.SizeMatches(artifact.Size, total))
+            {
+                TryDelete(partPath);
+                return UpdateOpResult.Fail(
+                    "IGE: The downloaded update was discarded because its size did not match the release.",
+                    $"URL: {artifact.Url}{Environment.NewLine}Expected: {artifact.Size} bytes{Environment.NewLine}Actual: {total} bytes");
             }
 
             var actual = Convert.ToHexString(hasher.GetHashAndReset()).ToLowerInvariant();

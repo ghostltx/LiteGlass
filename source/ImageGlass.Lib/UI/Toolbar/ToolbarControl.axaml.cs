@@ -812,10 +812,24 @@ public partial class ToolbarControl : PhControl
 
         // Pro licensing: one item per state; an expired license is managed, not pitched
         var isManagingLicense = Core.IsProEnabled || Core.ExpiredLicense is not null;
-        PART_MnuUpgradeLicense.IsVisible = !isManagingLicense;
-        PART_MnuManageLicense.IsVisible = isManagingLicense;
+        // LiteGlass does not pitch the store or a Pro upgrade.
+        _ = isManagingLicense;
+        PART_MnuUpgradeLicense.IsVisible = false;
+        PART_MnuManageLicense.IsVisible = false;
 
         RefreshPendingUpdateState();
+        PART_MnuLangZh.IsChecked = LiteGlassLanguage.IsChinese(Core.Config.Language);
+        PART_MnuLangEn.IsChecked = !PART_MnuLangZh.IsChecked;
+    }
+
+
+    private async void LanguageMenu_Click(object? sender, RoutedEventArgs e)
+    {
+        var which = (sender as MenuItem)?.CommandParameter as string;
+        var file = which == "zh" ? LiteGlassLanguage.ChineseFile : LiteGlassLanguage.EnglishFile;
+        await LiteGlassLanguage.ApplyAsync(file);
+        PART_MnuLangZh.IsChecked = LiteGlassLanguage.IsChinese(file);
+        PART_MnuLangEn.IsChecked = !PART_MnuLangZh.IsChecked;
     }
 
 

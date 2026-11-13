@@ -76,14 +76,14 @@ public partial class GeneralSettingsView : SettingsPageView
         BindAutoUpdateToggle(PART_AutoUpdate, ConfigId.AutoUpdate,
             LangId.Settings_AutoUpdate, LangId.Settings_AppUpdate);
         BindLink(PART_SeeWhatIsSent, LangId.Settings_SeeWhatIsSent, ShowUsageStatsPreview);
+        PART_SeeWhatIsSent.IsVisible = false;
 
         BindToggle(PART_AutoInstallUpdate, ConfigId.EnableAutoInstallUpdate,
             LangId.Settings_EnableAutoInstallUpdate, LangId.Settings_AppUpdate);
         ProGate(ConfigId.EnableAutoInstallUpdate, PART_AutoInstallUpdateBadge, PART_AutoInstallUpdate);
 
-        // nothing to offer on a channel that cannot install its own updates, or when an admin locked it
-        var canSelfUpdate = Core.UpdateProvider.CanInstallUpdate;
-        PART_AutoInstallUpdateRow.IsVisible = canSelfUpdate;
+        // One toggle covers the daily check and the silent download. There is no separate install switch.
+        PART_AutoInstallUpdateRow.IsVisible = false;
         SetLocalizedText(PART_CheckForUpdate, LangId._CheckForUpdate);
         PART_CheckForUpdate.Click += (_, _) => CheckForUpdate();
         PART_CheckForUpdate.IsVisible = !FeatureManager.IsLocked(API.IG_CheckForUpdate);
@@ -92,6 +92,18 @@ public partial class GeneralSettingsView : SettingsPageView
         // Others
         BindIntInput(PART_MsgDuration, ConfigId.InAppMessageDuration,
             LangId.Settings_InAppMessageDuration, LangId.Settings_Others);
+
+        PART_LangZh.Text = "简体中文";
+        PART_LangEn.Text = "English";
+    }
+
+
+    private async void LanguageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var file = ReferenceEquals(sender, PART_LangZh)
+            ? LiteGlassLanguage.ChineseFile
+            : LiteGlassLanguage.EnglishFile;
+        await LiteGlassLanguage.ApplyAsync(file);
     }
 
 
@@ -151,7 +163,7 @@ public partial class GeneralSettingsView : SettingsPageView
     {
         try
         {
-            await BHelper.OpenUrlAsync(this, "https://imageglass.org/docs", $"from_setting_{NavId}");
+            await BHelper.OpenUrlAsync(this, LiteGlassLanguage.ProjectUrl, $"from_setting_{NavId}");
         }
         catch
         {

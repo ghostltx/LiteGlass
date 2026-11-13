@@ -1,0 +1,106 @@
+name: LiteGlass portable
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+    branches:
+      - develop
+      - "cursor/liteglass-*"
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "11.0.x"
+
+      - name: Test update parsing and format registration
+        working-directory: source
+        run: dotnet test LiteGlass.Tests/LiteGlass.Tests.csproj -c Release --nologo
+
+  portable:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "11.0.x"
+
+      - name: Download PDFium (BSD)
+        shell: pwsh
+        run: |
+          $headers = @{ "User-Agent" = "LiteGlass"; "Accept" = "application/vnd.github+json" }
+          $release = Invoke-RestMethod -Headers $headers -Uri "https://api.github.com/repos/bblanchon/pdfium-binaries/releases/latest"
+          $asset = $release.assets | Where-Object { $_.name -eq "pdfium-win-x64.tgz" } | Select-Object -First 1
+          if (-not $asset) { throw "pdfium-win-x64.tgz was not on the latest pdfium-binaries release." }
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile pdfium-win-x64.tgz
+          New-Item -ItemType Directory -Force -Path pdfium-extract | Out-Null
+          tar -xzf pdfium-win-x64.tgz -C pdfium-extract
+          $dll = Get-ChildItem -Path pdfium-extract -Filter pdfium.dll -Recurse | Select-Object -First 1
+          if (-not $dll) { throw "pdfium.dll was not in the archive." }
+          $dest = "source/__assets/win/native/x64"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Copy-Item $dll.FullName (Join-Path $dest "pdfium.dll") -Force
+          Get-Item (Join-Path $dest "pdfium.dll") | Format-List FullName, Length
+
+      - name: Bundle LibreDWG 0.14 dwg2SVG (GPL-3.0)
+        shell: pwsh
+        run: |
+          $url = "https://github.com/LibreDWG/libredwg/releases/download/0.14/libredwg-0.14-win64.zip"
+          Invoke-WebRequest -Headers @{ "User-Agent" = "LiteGlass" } -Uri $url -OutFile libredwg-win64.zip
+          Expand-Archive -LiteralPath libredwg-win64.zip -DestinationPath libredwg-extract -Force
+          $dest = "source/__assets/win/native/x64/libredwg"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          $names = @("dwg2SVG.exe", "libredwg-0.dll", "libiconv-2.dll", "libpcre2-8-0.dll", "libpcre2-16-0.dll")
+          foreach ($name in $names) {
+            $file = Get-ChildItem -Path libredwg-extract -Filter $name -Recurse -File | Select-Object -First 1
+            if (-not $file) { throw "LibreDWG archive is missing $name." }
+            Copy-Item $file.FullName (Join-Path $dest $name) -Force
+          }
+          Get-ChildItem $dest | Select-Object Name, Length
+
+      - name: Pack the portable zip
+        shell: pwsh
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File source/__assets/win/script-pack-win-zip.ps1 -Platform x64
+
+      - name: Read the version
+        id: ver
+        shell: pwsh
+        run: |
+          $xml = Select-String -Path source/Directory.Build.props -Pattern '<IgVersion>(.*?)</IgVersion>' | Select-Object -First 1
+          $version = $xml.Matches[0].Groups[1].Value.Trim()
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "LiteGlass $version"
+
+      - name: Publish the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: LiteGlass ${{ steps.ver.outputs.version }}
+          make_latest: true
+          generate_release_notes: true
+          body: |
+            Portable LiteGlass for Windows x64. Extract the zip and run `LiteGlass.exe`. Settings stay in that folder (`.igportable`).
+
+            The app checks this repository for a newer `LiteGlass-win-x64-portable.zip` at most once a day, after the first image is shown. A downloaded build is applied the next time LiteGlass starts, or from Help → Install update and restart.
+
+            Check for updates can be turned off in Settings. No other network access is used.
+
+            ## Formats added
+            - `.pdf`, PDF-compatible `.ai`, and `.eps` when the file contains a PDF stream or a DOS EPS TIFF/WMF preview (PDFium, first page).
+            - `.dwg` via bundled LibreDWG `dwg2SVG` (best effort, 20 second timeout).
+
+            Color management uses the current monitor profile by default, including images that have no embedded profile.
+          files: |
+            source/__artifacts/bundle/LiteGlass-win-x64-portable.zip
+            source/__artifacts/bundle/LiteGlass-win-x64-portable.zip.sha256

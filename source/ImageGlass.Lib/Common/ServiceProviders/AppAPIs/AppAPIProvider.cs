@@ -3326,10 +3326,10 @@ public partial class AppAPIProvider
     /// <summary>
     /// Open the Pro license window (Upgrade when unlicensed, Manage when licensed).
     /// </summary>
-    public static async Task IG_ManageLicenseAsync()
+    public static Task IG_ManageLicenseAsync()
     {
-        var dialog = new ManageLicenseWindow();
-        _ = await dialog.ShowAsync(App.MainWindow);
+        // LiteGlass has no license or purchase window.
+        return Task.CompletedTask;
     }
 
 
@@ -3351,14 +3351,11 @@ public partial class AppAPIProvider
     {
         if (showUI) _hasManualUpdateCheck.SetTrue();
 
-        // silent mode: skip if disabled or checked recently
+        // silent mode: at most once a day, and never a window
         if (!showUI)
         {
             if (string.Equals(Core.Config.AutoUpdate, "0", StringComparison.Ordinal)) return;
             if (!UpdateProvider.ShouldCheck) return;
-
-            // delay to let the app finish starting
-            await Task.Delay(TimeSpan.FromSeconds(10));
         }
 
 
@@ -3387,17 +3384,8 @@ public partial class AppAPIProvider
         }
         else
         {
-            // auto-download when enabled; the ready package shows the menu affordance, not a popup
-            var download = await Core.UpdateProvider.TryDownloadUpdateAsync(result, CancellationToken.None);
-            if (download.IsSuccess) return;
-
-            // silent mode: only show window for an update the user has not already checked for
-            if (result.Status == Update.UpdateCheckStatus.UpdateAvailable && !_hasManualUpdateCheck)
-            {
-                updateWindow = new UpdateWindow();
-                updateWindow.SetResultState(result);
-                _ = await updateWindow.ShowAsync(App.MainWindow);
-            }
+            // Download only. The menu item and the next launch apply it; there is no popup.
+            _ = await Core.UpdateProvider.TryDownloadUpdateAsync(result, CancellationToken.None);
         }
     }
 
@@ -3515,7 +3503,7 @@ public partial class AppAPIProvider
     public static void IG_ReportIssue()
     {
         _ = BHelper.OpenUrlAsync(App.MainWindow,
-            "https://github.com/d2phap/ImageGlass/issues?q=is%3Aissue+",
+            "https://github.com/ghostltx/LiteGlass/issues",
             "from_report_issue");
     }
 

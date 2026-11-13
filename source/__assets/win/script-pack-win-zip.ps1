@@ -1,7 +1,7 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-    Build (and optionally sign) the portable ZIP of ImageGlass.Win32, one .zip per architecture.
+    Build (and optionally sign) the portable ZIP of LiteGlass, one .zip per architecture.
 
 .DESCRIPTION
     Produces the archive published on GitHub Releases for users who do not want an installer:
@@ -19,7 +19,9 @@
     to %LocalAppData% behind the user's back. Do NOT ship the marker in the MSIX package: its
     payload folder is read-only, so every launch would fail.
 
-    Output: __artifacts/bundle/ImageGlass_<label>_win-<arch>.zip
+    Output: __artifacts/bundle/LiteGlass_<label>_win-<arch>.zip
+    Also copies the stable name the updater downloads: LiteGlass-win-<arch>-portable.zip
+    plus a sibling .sha256 file.
 
 .PARAMETER Platform
     Target architecture: x64 (default) or arm64.
@@ -172,7 +174,7 @@ $rid         = "win-$Platform"
 $msbuildPlat = if ($Platform -eq 'x64') { 'x64' } else { 'ARM64' }
 $publishDir  = Join-Path $WorkspaceDir "__artifacts\publish\$rid"
 $stagingDir  = Join-Path $DistDir "$rid-zip"
-$archiveName = "ImageGlass_${relLabel}_${rid}"
+$archiveName = "LiteGlass_${relLabel}_${rid}"
 # The staged folder name becomes the single top-level folder inside the archive, named after the
 # archive itself (matches the previous releases).
 $payloadDir  = Join-Path $stagingDir $archiveName
@@ -185,14 +187,14 @@ if ($script:doSign -and -not (Test-SigningCert)) {
 }
 $signtool = if ($script:doSign) { Find-SdkTool 'signtool.exe' } else { '' }
 
-Write-Host "==> Packing ImageGlass $igVersion as ZIP ($Platform)"
+Write-Host "==> Packing LiteGlass $igVersion as ZIP ($Platform)"
 Write-Host "    Portable    : $(if ($NoPortable) { 'no (no marker file)' } else { "yes ($PortableMarker)" })"
 Write-Host "    Signed      : $(if ($script:doSign) { 'yes (payload binaries)' } else { 'no' })"
 Write-Host "    Output      : $outZip"
 if ($script:doSign) { Write-Host "    signtool    : $signtool" }
 
 # --- 1. Publish a fresh self-contained AOT build -------------------------------
-if ($SkipPublish -and (Test-Path (Join-Path $publishDir 'ImageGlass.exe'))) {
+if ($SkipPublish -and (Test-Path (Join-Path $publishDir 'LiteGlass.exe'))) {
     Write-Host "    reusing publish output: $publishDir"
 }
 else {
@@ -203,8 +205,8 @@ else {
     # Bundle the shared app assets (themes, credits, etc.), mirroring the publish-win tasks.
     Copy-Item -Path (Join-Path $AppExtras '*') -Destination $publishDir -Recurse -Force
 }
-if (-not (Test-Path (Join-Path $publishDir 'ImageGlass.exe'))) {
-    throw "Publish did not produce ImageGlass.exe in $publishDir"
+if (-not (Test-Path (Join-Path $publishDir 'LiteGlass.exe'))) {
+    throw "Publish did not produce LiteGlass.exe in $publishDir"
 }
 
 # --- 2. Stage the payload ------------------------------------------------------
@@ -254,6 +256,15 @@ if (Test-Path $outZip) { Remove-Item $outZip -Force }
     $true)   # includeBaseDirectory: everything lands under the archive-named folder
 
 $zipSizeMb = [math]::Round((Get-Item $outZip).Length / 1MB, 1)
+
+# Stable name the in-app updater looks up on the GitHub release, plus its SHA-256.
+$stableZip = Join-Path $DistDir "LiteGlass-win-$Platform-portable.zip"
+Copy-Item -LiteralPath $outZip -Destination $stableZip -Force
+$sha = (Get-FileHash -LiteralPath $stableZip -Algorithm SHA256).Hash.ToLowerInvariant()
+$shaFile = "${stableZip}.sha256"
+Set-Content -LiteralPath $shaFile -Value "$sha  LiteGlass-win-$Platform-portable.zip" -Encoding ascii
+Write-Host "    stable asset: $stableZip"
+Write-Host "    sha256      : $sha"
 
 # --- 6. Clean up staging -------------------------------------------------------
 Remove-Item $stagingDir -Recurse -Force -ErrorAction SilentlyContinue

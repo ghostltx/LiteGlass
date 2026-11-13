@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <GenerateIgAppBuildInfo>false</GenerateIgAppBuildInfo>
+    <RootNamespace>LiteGlass.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ImageGlass.Lib\Common\ServiceProviders\Update\UpdateManifest.cs" Link="UpdateManifest.cs" />
+    <Compile Include="..\ImageGlass.Lib\Common\ServiceProviders\Update\GitHubReleaseParser.cs" Link="GitHubReleaseParser.cs" />
+    <Compile Include="..\ImageGlass.Lib\Common\ServiceProviders\Update\LiteGlassUpdaterScript.cs" Link="LiteGlassUpdaterScript.cs" />
+    <Compile Include="..\ImageGlass.Lib\Common\Photoing\Codecs\PdfiumCodecs\PdfiumLocator.cs" Link="PdfiumLocator.cs" />
+    <Compile Include="..\ImageGlass.Lib\Common\Photoing\Codecs\PdfiumCodecs\PdfPageSize.cs" Link="PdfPageSize.cs" />
+    <Compile Include="..\ImageGlass.Lib\Common\Photoing\Codecs\DwgCodecs\DwgCommand.cs" Link="DwgCommand.cs" />
+  </ItemGroup>
+</Project>

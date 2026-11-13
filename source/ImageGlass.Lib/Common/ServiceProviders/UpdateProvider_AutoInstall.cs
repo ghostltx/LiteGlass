@@ -241,14 +241,15 @@ public partial class UpdateProvider
     /// <summary>
     /// Whether the user can install an update from inside the app (licence, channel, policy).
     /// </summary>
-    public bool CanInstallUpdateInApp => Core.IsProEnabled && CanInstallUpdate;
+    public bool CanInstallUpdateInApp => CanInstallUpdate;
 
 
     /// <summary>
     /// Whether this build may download updates in the background without being asked.
+    /// The single settings toggle is <see cref="Core.Config.AutoUpdate"/>; "0" turns it off.
     /// </summary>
-    public bool CanAutoInstall => CanInstallUpdateInApp
-        && Core.Config.EnableAutoInstallUpdate;
+    public bool CanAutoInstall => CanInstallUpdate
+        && !string.Equals(Core.Config.AutoUpdate, "0", StringComparison.Ordinal);
 
 
     /// <summary>
