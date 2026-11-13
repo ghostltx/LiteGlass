@@ -19,6 +19,7 @@
     <Compile Include="..\ImageGlass.Lib\Common\ServiceProviders\Update\GitHubReleaseParser.cs" Link="GitHubReleaseParser.cs" />
     <Compile Include="..\ImageGlass.Lib\Common\ServiceProviders\Update\LiteGlassUpdaterScript.cs" Link="LiteGlassUpdaterScript.cs" />
     <Compile Include="..\ImageGlass.Lib\Common\Photoing\Codecs\PdfiumCodecs\PdfiumLocator.cs" Link="PdfiumLocator.cs" />
+    <Compile Include="..\ImageGlass.Lib\Common\Photoing\Codecs\PdfiumCodecs\PdfPageSize.cs" Link="PdfPageSize.cs" />
     <Compile Include="..\ImageGlass.Lib\Common\Photoing\Codecs\DwgCodecs\DwgCommand.cs" Link="DwgCommand.cs" />
   </ItemGroup>
 </Project>

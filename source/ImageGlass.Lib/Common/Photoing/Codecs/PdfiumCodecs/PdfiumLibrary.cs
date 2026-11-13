@@ -48,20 +48,53 @@ internal static partial class PdfiumLibrary
 
 
     /// <summary>
+    /// Reads the first page's size. A zero MediaBox or CropBox falls back to the other boxes,
+    /// then to US Letter. Never throws for a missing size.
+    /// </summary>
+    public static PdfPageSize.Result MeasureFirstPage(ReadOnlyMemory<byte> pdfBytes)
+    {
+        RejectEmptyOrHuge(pdfBytes);
+        lock (_gate)
+        {
+            EnsureLoaded();
+            return WithFirstPage(pdfBytes.Span, static page =>
+            {
+                var rotation = ReadRotation(page);
+                return PdfPageSize.Resolve(
+                    FPDF_GetPageWidthF(page),
+                    FPDF_GetPageHeightF(page),
+                    rotation,
+                    ReadBox(page, FPDFPage_GetMediaBox),
+                    ReadBox(page, FPDFPage_GetCropBox),
+                    ReadBox(page, FPDFPage_GetBleedBox),
+                    ReadBox(page, FPDFPage_GetTrimBox),
+                    ReadBox(page, FPDFPage_GetArtBox));
+            });
+        }
+    }
+
+
+    /// <summary>
     /// Renders the first page. The caller owns the returned image.
     /// </summary>
     public static SKImage RenderFirstPage(ReadOnlyMemory<byte> pdfBytes)
+    {
+        RejectEmptyOrHuge(pdfBytes);
+
+        lock (_gate)
+        {
+            EnsureLoaded();
+            return WithFirstPage(pdfBytes.Span, RenderMeasuredPage);
+        }
+    }
+
+
+    private static void RejectEmptyOrHuge(ReadOnlyMemory<byte> pdfBytes)
     {
         if (pdfBytes.Length == 0) throw new InvalidOperationException("The file has no PDF content to render.");
         if (pdfBytes.Length > MaxFileBytes)
         {
             throw new InvalidOperationException("This file is too large to render with the built-in PDF engine.");
-        }
-
-        lock (_gate)
-        {
-            EnsureLoaded();
-            return RenderFirstPageLocked(pdfBytes.Span);
         }
     }
 
@@ -85,11 +118,10 @@ internal static partial class PdfiumLibrary
     }
 
 
-    private static SKImage RenderFirstPageLocked(ReadOnlySpan<byte> pdfBytes)
+    private static T WithFirstPage<T>(ReadOnlySpan<byte> pdfBytes, Func<IntPtr, T> usePage)
     {
         IntPtr document = IntPtr.Zero;
         IntPtr page = IntPtr.Zero;
-        IntPtr bitmap = IntPtr.Zero;
         var pinned = GCHandle.Alloc(pdfBytes.ToArray(), GCHandleType.Pinned);
         try
         {
@@ -108,27 +140,56 @@ internal static partial class PdfiumLibrary
             page = FPDF_LoadPage(document, 0);
             if (page == IntPtr.Zero) throw new InvalidOperationException("PDFium could not open the first page.");
 
+            return usePage(page);
+        }
+        finally
+        {
+            if (page != IntPtr.Zero) FPDF_ClosePage(page);
+            if (document != IntPtr.Zero) FPDF_CloseDocument(document);
+            if (pinned.IsAllocated) pinned.Free();
+        }
+    }
+
+
+    private static SKImage RenderMeasuredPage(IntPtr page)
+    {
+        var rotation = ReadRotation(page);
+        var size = PdfPageSize.Resolve(
+            FPDF_GetPageWidthF(page),
+            FPDF_GetPageHeightF(page),
+            rotation,
+            ReadBox(page, FPDFPage_GetMediaBox),
+            ReadBox(page, FPDFPage_GetCropBox),
+            ReadBox(page, FPDFPage_GetBleedBox),
+            ReadBox(page, FPDFPage_GetTrimBox),
+            ReadBox(page, FPDFPage_GetArtBox));
+
+        if (size.BoxToApply is { } box)
+        {
+            // A zero CropBox makes GetPageWidthF return 0 and clips the render. Replace it.
+            TrySetBox(page, box);
             var widthPt = FPDF_GetPageWidthF(page);
             var heightPt = FPDF_GetPageHeightF(page);
-            if (widthPt < 1 || heightPt < 1)
-            {
-                throw new InvalidOperationException("The first page has no visible size.");
-            }
+            if (IsUsable(widthPt) && IsUsable(heightPt))
+                size = size with { WidthPt = widthPt, HeightPt = heightPt };
+        }
 
-            var scale = 144d / 72d;
-            var width = Math.Max(1, (int)Math.Ceiling(widthPt * scale));
-            var height = Math.Max(1, (int)Math.Ceiling(heightPt * scale));
-            var edge = Math.Max(width, height);
-            if (edge > MaxEdge)
-            {
-                var shrink = MaxEdge / (double)edge;
-                width = Math.Max(1, (int)Math.Floor(width * shrink));
-                height = Math.Max(1, (int)Math.Floor(height * shrink));
-            }
+        var scale = 144d / 72d;
+        var width = Math.Max(1, (int)Math.Ceiling(size.WidthPt * scale));
+        var height = Math.Max(1, (int)Math.Ceiling(size.HeightPt * scale));
+        var edge = Math.Max(width, height);
+        if (edge > MaxEdge)
+        {
+            var shrink = MaxEdge / (double)edge;
+            width = Math.Max(1, (int)Math.Floor(width * shrink));
+            height = Math.Max(1, (int)Math.Floor(height * shrink));
+        }
 
-            bitmap = FPDFBitmap_Create(width, height, 1);
-            if (bitmap == IntPtr.Zero) throw new InvalidOperationException("PDFium could not allocate a page bitmap.");
+        var bitmap = FPDFBitmap_Create(width, height, 1);
+        if (bitmap == IntPtr.Zero) throw new InvalidOperationException("PDFium could not allocate a page bitmap.");
 
+        try
+        {
             FPDFBitmap_FillRect(bitmap, 0, 0, width, height, 0xFFFFFFFF);
             FPDF_RenderPageBitmap(bitmap, page, 0, 0, width, height, 0, RenderFlags);
 
@@ -158,12 +219,47 @@ internal static partial class PdfiumLibrary
         }
         finally
         {
-            if (bitmap != IntPtr.Zero) FPDFBitmap_Destroy(bitmap);
-            if (page != IntPtr.Zero) FPDF_ClosePage(page);
-            if (document != IntPtr.Zero) FPDF_CloseDocument(document);
-            if (pinned.IsAllocated) pinned.Free();
+            FPDFBitmap_Destroy(bitmap);
         }
     }
+
+
+    private static int ReadRotation(IntPtr page)
+    {
+        try { return FPDFPage_GetRotation(page); }
+        catch (EntryPointNotFoundException) { return 0; }
+    }
+
+
+    private static PdfPageBox? ReadBox(IntPtr page, BoxReader read)
+    {
+        try
+        {
+            if (read(page, out var left, out var bottom, out var right, out var top) == 0) return null;
+            return new PdfPageBox(left, bottom, right, top);
+        }
+        catch (EntryPointNotFoundException)
+        {
+            return null;
+        }
+    }
+
+
+    private static void TrySetBox(IntPtr page, PdfPageBox box)
+    {
+        try
+        {
+            _ = FPDFPage_SetMediaBox(page, box.Left, box.Bottom, box.Right, box.Top);
+            _ = FPDFPage_SetCropBox(page, box.Left, box.Bottom, box.Right, box.Top);
+        }
+        catch (EntryPointNotFoundException) { }
+    }
+
+
+    private static bool IsUsable(double points) => double.IsFinite(points) && points >= 1;
+
+
+    private delegate int BoxReader(IntPtr page, out float left, out float bottom, out float right, out float top);
 
 
     [LibraryImport("pdfium")]
@@ -189,6 +285,30 @@ internal static partial class PdfiumLibrary
 
     [LibraryImport("pdfium")]
     private static partial double FPDF_GetPageHeightF(IntPtr page);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_GetRotation(IntPtr page);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_GetMediaBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_GetCropBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_GetBleedBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_GetTrimBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_GetArtBox(IntPtr page, out float left, out float bottom, out float right, out float top);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_SetMediaBox(IntPtr page, float left, float bottom, float right, float top);
+
+    [LibraryImport("pdfium")]
+    private static partial int FPDFPage_SetCropBox(IntPtr page, float left, float bottom, float right, float top);
 
     [LibraryImport("pdfium")]
     private static partial IntPtr FPDFBitmap_Create(int width, int height, int alpha);

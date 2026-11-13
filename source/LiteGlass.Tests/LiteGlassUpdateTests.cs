@@ -143,11 +143,101 @@ public class FormatSupportTests
 
 
     [Fact]
+    public void ZeroMediaBoxPdfDoesNotThrowAndUsesLetterSize()
+    {
+        // The page PDFium would measure as 0x0: MediaBox and CropBox are both empty.
+        var pdf = """
+            %PDF-1.4
+            1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
+            2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj
+            3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 0 0]/CropBox[0 0 0 0]>>endobj
+            trailer<</Root 1 0 R>>
+            %%EOF
+            """;
+        var bytes = Encoding.ASCII.GetBytes(pdf);
+        Assert.Equal(0, PdfiumLocator.FindPdfOffset(bytes));
+        Assert.Contains("/MediaBox[0 0 0 0]", pdf, StringComparison.Ordinal);
+
+        var media = ReadBox(pdf, "MediaBox");
+        var crop = ReadBox(pdf, "CropBox");
+        Assert.False(media!.Value.HasArea);
+        Assert.False(crop!.Value.HasArea);
+        Assert.Null(ReadBox(pdf, "ArtBox"));
+
+        var size = PdfPageSize.Resolve(0, 0, rotation: 0, media, crop, bleed: null, trim: null, art: null);
+        Assert.True(size.UsedDefault);
+        Assert.Equal(PdfPageSize.LetterWidthPt, size.WidthPt);
+        Assert.Equal(PdfPageSize.LetterHeightPt, size.HeightPt);
+        Assert.True(size.WidthPt >= 1 && size.HeightPt >= 1);
+    }
+
+
+    [Fact]
+    public void MissingMediaBoxUsesArtBoxAndRotation()
+    {
+        var pdf = """
+            %PDF-1.4
+            3 0 obj<</Type/Page/Parent 2 0 R/ArtBox[10 20 410 320]>>endobj
+            %PDF-1.4
+            """;
+        Assert.Null(ReadBox(pdf, "MediaBox"));
+        var art = ReadBox(pdf, "ArtBox");
+        Assert.True(art!.Value.HasArea);
+
+        var upright = PdfPageSize.Resolve(0, 0, 0, media: null, crop: null, bleed: null, trim: null, art);
+        Assert.False(upright.UsedDefault);
+        Assert.Equal(400, upright.WidthPt);
+        Assert.Equal(300, upright.HeightPt);
+
+        var turned = PdfPageSize.Resolve(0, 0, rotation: 1, media: null, crop: null, bleed: null, trim: null, art);
+        Assert.Equal(300, turned.WidthPt);
+        Assert.Equal(400, turned.HeightPt);
+    }
+
+
+    [Fact]
+    public void ReportedPageSizeWinsOverAZeroBox()
+    {
+        var zero = new PdfPageBox(0, 0, 0, 0);
+        var size = PdfPageSize.Resolve(200, 100, 0, zero, zero, null, null, null);
+        Assert.False(size.UsedDefault);
+        Assert.Equal(200, size.WidthPt);
+        Assert.Equal(100, size.HeightPt);
+        Assert.Null(size.BoxToApply);
+    }
+
+
+    [Fact]
+    public void IllustratorFileWithoutPdfSaysSo()
+    {
+        Assert.Contains("PDF-compatible", PdfiumLocator.AiNotPdfCompatibleMessage, StringComparison.Ordinal);
+        Assert.Equal(-1, PdfiumLocator.FindPdfOffset("%!PS-Adobe-3.0"u8));
+    }
+
+
+    [Fact]
     public void MissingDwgToolHasAClearMessage()
     {
         Assert.Null(DwgCommand.FindTool(Path.GetTempPath()));
         Assert.Contains("dwg2SVG", DwgCommand.MissingToolMessage);
         Assert.Contains("hang", DwgCommand.TimeoutMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
+
+    private static PdfPageBox? ReadBox(string pdf, string name)
+    {
+        var token = "/" + name;
+        var at = pdf.IndexOf(token, StringComparison.Ordinal);
+        if (at < 0) return null;
+
+        var open = pdf.IndexOf('[', at);
+        var close = pdf.IndexOf(']', open);
+        var parts = pdf[(open + 1)..close].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return new PdfPageBox(
+            float.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture),
+            float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture),
+            float.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture),
+            float.Parse(parts[3], System.Globalization.CultureInfo.InvariantCulture));
     }
 
 

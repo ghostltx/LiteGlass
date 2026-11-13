@@ -67,6 +67,13 @@ public static class PdfiumLocator
 
 
     /// <summary>
+    /// Shown when an Illustrator file has no PDF stream PDFium can open.
+    /// </summary>
+    public const string AiNotPdfCompatibleMessage =
+        "This Illustrator file has no PDF-compatible content. LiteGlass renders the PDF stream Illustrator embeds by default, not legacy PostScript.";
+
+
+    /// <summary>
     /// Reads the DOS EPS binary preview, preferring TIFF over WMF.
     /// </summary>
     public static EpsPreview? ReadDosPreview(ReadOnlySpan<byte> data)

@@ -112,7 +112,7 @@ public sealed class PdfiumCodecAdapter : PhDisposable, ICodec
         if (pdfOffset >= 0)
         {
             var pdf = pdfOffset == 0 ? bytes : bytes[pdfOffset..];
-            return PdfiumLibrary.RenderFirstPage(pdf);
+            return RenderPdf(pdf, ext);
         }
 
         if (ext.Equals(".eps", StringComparison.OrdinalIgnoreCase)
@@ -124,8 +124,7 @@ public sealed class PdfiumCodecAdapter : PhDisposable, ICodec
 
         if (ext.Equals(".ai", StringComparison.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException(
-                "This Illustrator file has no PDF-compatible content. LiteGlass renders the PDF stream Illustrator embeds by default, not legacy PostScript.");
+            throw new InvalidOperationException(PdfiumLocator.AiNotPdfCompatibleMessage);
         }
 
         if (ext.Equals(".eps", StringComparison.OrdinalIgnoreCase))
@@ -135,6 +134,58 @@ public sealed class PdfiumCodecAdapter : PhDisposable, ICodec
         }
 
         throw new InvalidOperationException("This file is not a PDF that PDFium can open.");
+    }
+
+
+    private static SKImage RenderPdf(byte[] pdf, string extension)
+    {
+        PdfPageSize.Result measured;
+        try
+        {
+            measured = PdfiumLibrary.MeasureFirstPage(pdf);
+        }
+        catch (InvalidOperationException ex) when (IsAi(extension))
+        {
+            throw new InvalidOperationException(PdfiumLocator.AiNotPdfCompatibleMessage, ex);
+        }
+
+        // No box had a size. Magick can still read some of these when Ghostscript is present.
+        if (measured.UsedDefault && TryMagick(pdf) is { } magickImage)
+            return magickImage;
+
+        try
+        {
+            return PdfiumLibrary.RenderFirstPage(pdf);
+        }
+        catch (InvalidOperationException ex) when (IsAi(extension) && IsUnreadablePdf(ex))
+        {
+            throw new InvalidOperationException(PdfiumLocator.AiNotPdfCompatibleMessage, ex);
+        }
+    }
+
+
+    private static bool IsAi(string extension) =>
+        extension.Equals(".ai", StringComparison.OrdinalIgnoreCase);
+
+
+    private static bool IsUnreadablePdf(InvalidOperationException ex) =>
+        ex.Message.Contains("could not open", StringComparison.OrdinalIgnoreCase)
+        || ex.Message.Contains("no pages", StringComparison.OrdinalIgnoreCase)
+        || ex.Message.Contains("no PDF content", StringComparison.OrdinalIgnoreCase);
+
+
+    private static SKImage? TryMagick(byte[] pdf)
+    {
+        try
+        {
+            using var magick = new MagickImage(pdf);
+            if (magick.Width < 1 || magick.Height < 1) return null;
+            return SkiaCodec.FromMagick(magick, null, false);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
 
