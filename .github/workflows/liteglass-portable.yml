@@ -53,33 +53,19 @@ jobs:
           Copy-Item $dll.FullName (Join-Path $dest "pdfium.dll") -Force
           Get-Item (Join-Path $dest "pdfium.dll") | Format-List FullName, Length
 
-      - uses: msys2/setup-msys2@v2
-        id: msys
-        continue-on-error: true
-        with:
-          msystem: UCRT64
-          update: true
-          install: mingw-w64-ucrt-x86_64-libredwg
-          release: false
-
-      - name: Copy dwg2SVG and the DLLs it needs
-        continue-on-error: true
+      - name: Bundle LibreDWG 0.14 dwg2SVG (GPL-3.0)
         shell: pwsh
         run: |
+          $url = "https://github.com/LibreDWG/libredwg/releases/download/0.14/libredwg-0.14-win64.zip"
+          Invoke-WebRequest -Headers @{ "User-Agent" = "LiteGlass" } -Uri $url -OutFile libredwg-win64.zip
+          Expand-Archive -LiteralPath libredwg-win64.zip -DestinationPath libredwg-extract -Force
           $dest = "source/__assets/win/native/x64/libredwg"
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          $bin = "C:\msys64\ucrt64\bin"
-          $tool = Join-Path $bin "dwg2SVG.exe"
-          if (-not (Test-Path $tool)) { throw "dwg2SVG.exe was not installed by the MSYS2 libredwg package." }
-          Copy-Item $tool $dest -Force
-          $listed = & C:\msys64\usr\bin\ntldd.exe -R $tool
-          $listed | ForEach-Object {
-            if ($_ -match '=>\s+(\S+)') {
-              $path = $Matches[1] -replace '/', '\'
-              if ($path -match 'ucrt64\\bin\\' -and (Test-Path $path)) {
-                Copy-Item $path $dest -Force
-              }
-            }
+          $names = @("dwg2SVG.exe", "libredwg-0.dll", "libiconv-2.dll", "libpcre2-8-0.dll", "libpcre2-16-0.dll")
+          foreach ($name in $names) {
+            $file = Get-ChildItem -Path libredwg-extract -Filter $name -Recurse -File | Select-Object -First 1
+            if (-not $file) { throw "LibreDWG archive is missing $name." }
+            Copy-Item $file.FullName (Join-Path $dest $name) -Force
           }
           Get-ChildItem $dest | Select-Object Name, Length
 

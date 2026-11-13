@@ -54,7 +54,7 @@ Added in LiteGlass:
 | `.eps` | PDFium when a PDF stream is present; otherwise the TIFF or WMF preview in a DOS EPS header | Pure PostScript, with no preview, is refused. Ghostscript is not bundled |
 | `.dwg` | LibreDWG `dwg2SVG`, bundled, then drawn as SVG | Best effort. Complicated drawings can be incomplete. The converter is stopped after 20 seconds so the viewer does not hang |
 
-PDFium is downloaded at build time from [bblanchon/pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) and placed next to `LiteGlass.exe`. LibreDWG is taken from the MSYS2 UCRT64 package and placed in `libredwg\`. If that tool is missing, opening a DWG shows an error instead of crashing.
+PDFium is downloaded at build time from [bblanchon/pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) and placed next to `LiteGlass.exe`. LibreDWG 0.14’s official Windows build (`dwg2SVG.exe` and its DLLs) is placed in `libredwg\`. `dwg2SVG` writes SVG to standard output. If that tool is missing, opening a DWG shows an error instead of crashing.
 
 ## Build
 
@@ -70,7 +70,7 @@ Locally, from `source`, on Windows with the .NET 11 SDK:
 pwsh __assets/win/script-pack-win-zip.ps1 -Platform x64
 ```
 
-Put `pdfium.dll` in `__assets/win/native/x64/` and `dwg2SVG.exe` plus its DLLs in `__assets/win/native/x64/libredwg/` before packing if you want those formats in a local zip.
+Put `pdfium.dll` in `__assets/win/native/x64/` and `dwg2SVG.exe` plus `libredwg-0.dll`, `libiconv-2.dll`, and the `libpcre2` DLLs in `__assets/win/native/x64/libredwg/` before packing if you want those formats in a local zip. The workflow downloads them from the PDFium and LibreDWG 0.14 releases.
 
 ## License
 
@@ -134,7 +134,7 @@ LiteGlass 新增：
 | `.eps` | 有 PDF 流时用 PDFium；否则读取 DOS EPS 头里的 TIFF 或 WMF 预览 | 没有预览的纯 PostScript 会提示错误。不附带 Ghostscript |
 | `.dwg` | 附带的 LibreDWG `dwg2SVG` 转成 SVG 再绘制 | 尽力而为。复杂图纸可能不完整。转换超过 20 秒会被中止，避免查看器卡住 |
 
-构建时会从 [bblanchon/pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) 下载 PDFium，并放在 `LiteGlass.exe` 旁边。LibreDWG 来自 MSYS2 的 UCRT64 包，放在 `libredwg\`。如果找不到该工具，打开 DWG 会显示错误，而不是崩溃。
+构建时会从 [bblanchon/pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) 下载 PDFium，并放在 `LiteGlass.exe` 旁边。LibreDWG 0.14 的官方 Windows 构建（`dwg2SVG.exe` 及其 DLL）放在 `libredwg\`。`dwg2SVG` 把 SVG 写到标准输出。如果找不到该工具，打开 DWG 会显示错误，而不是崩溃。
 
 ## 构建
 
@@ -150,7 +150,7 @@ GitHub 上的工作流会：
 pwsh __assets/win/script-pack-win-zip.ps1 -Platform x64
 ```
 
-若希望本地压缩包包含新格式，打包前请把 `pdfium.dll` 放到 `__assets/win/native/x64/`，并把 `dwg2SVG.exe` 及其 DLL 放到 `__assets/win/native/x64/libredwg/`。
+若希望本地压缩包包含新格式，打包前请把 `pdfium.dll` 放到 `__assets/win/native/x64/`，并把 `dwg2SVG.exe`、`libredwg-0.dll`、`libiconv-2.dll` 和 `libpcre2` 的 DLL 放到 `__assets/win/native/x64/libredwg/`。工作流会从 PDFium 与 LibreDWG 0.14 的发布页下载它们。
 
 ## 许可证
 

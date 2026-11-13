@@ -143,14 +143,13 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
             RedirectStandardOutput = true,
             WorkingDirectory = Path.GetDirectoryName(tool) ?? string.Empty,
         };
-        psi.ArgumentList.Add("-o");
-        psi.ArgumentList.Add(svgPath);
+        // LibreDWG 0.14 writes the SVG to stdout: dwg2SVG DWGFILE > SVGFILE. There is no -o.
         psi.ArgumentList.Add(filePath);
 
         using var process = Process.Start(psi) ?? throw new InvalidOperationException(DwgCommand.MissingToolMessage);
-        // Drain both pipes while waiting so a chatty tool cannot fill the buffer and stall.
+        using var svg = new FileStream(svgPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+        var copy = process.StandardOutput.BaseStream.CopyToAsync(svg, cancellationToken);
         var stderr = process.StandardError.ReadToEndAsync(cancellationToken);
-        var stdout = process.StandardOutput.ReadToEndAsync(cancellationToken);
         var deadline = Environment.TickCount64 + (DwgCommand.TimeoutSeconds * 1000L);
         while (!process.HasExited)
         {
@@ -164,8 +163,8 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
             {
                 try { process.Kill(entireProcessTree: true); } catch { }
                 try { process.WaitForExit(2000); } catch { }
+                try { copy.GetAwaiter().GetResult(); } catch { }
                 try { _ = stderr.GetAwaiter().GetResult(); } catch { }
-                try { _ = stdout.GetAwaiter().GetResult(); } catch { }
                 throw new InvalidOperationException(DwgCommand.TimeoutMessage);
             }
 
@@ -173,12 +172,10 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
         }
 
         process.WaitForExit();
+        try { copy.GetAwaiter().GetResult(); } catch { }
+        try { svg.Flush(); } catch { }
         var detail = string.Empty;
         try { detail = stderr.GetAwaiter().GetResult(); } catch { }
-        if (string.IsNullOrWhiteSpace(detail))
-        {
-            try { detail = stdout.GetAwaiter().GetResult(); } catch { }
-        }
 
         if (process.ExitCode != 0 && (!File.Exists(svgPath) || new FileInfo(svgPath).Length == 0))
         {
