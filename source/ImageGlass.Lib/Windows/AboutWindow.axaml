@@ -36,7 +36,7 @@
                         FontSize="26"
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource IG_TextAccentColor}"
-                        Text="ImageGlass 10" />
+                        Text="LiteGlass" />
 
                     <!--  slogan  -->
                     <TextBlock
@@ -139,10 +139,17 @@
     <uiw:DialogWindow.DialogFooterLeftContent>
         <StackPanel Orientation="Horizontal" Spacing="8">
             <ui:PhButton
+                x:Name="PART_BtnInstallUpdate"
+                MinWidth="80"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                IsVisible="False" />
+            <ui:PhButton
                 x:Name="PART_BtnDonate"
                 MinWidth="80"
                 HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center" />
+                VerticalContentAlignment="Center"
+                IsVisible="False" />
             <ui:PhButton
                 x:Name="PART_BtnCheckForUpdate"
                 MinWidth="80"

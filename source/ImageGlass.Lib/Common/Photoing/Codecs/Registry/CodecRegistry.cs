@@ -106,6 +106,8 @@ public sealed class CodecRegistry : PhDisposable
         _fallbackDecodeCodec = new MagickCodecAdapter();
 
         Register(new SvgCodecAdapter());
+        Register(new PdfiumCodecAdapter());
+        Register(new DwgCodecAdapter());
         Register(new SkiaCodecAdapter());
         Register(_fallbackDecodeCodec);
     }

@@ -1,164 +1,157 @@
-<div align="center">
+# LiteGlass
 
-# 🖼️ ImageGlass
+LiteGlass is a lightweight, portable fork of [ImageGlass](https://github.com/d2phap/ImageGlass) by Dương Diệu Pháp (d2phap). It keeps the GPL-3.0 license. The goal is a fast Windows image viewer: open a picture immediately, honor color profiles, and read as many formats as ImageGlass already can, plus PDF-compatible Illustrator files and a best-effort AutoCAD preview.
 
-### A Fast, Seamless Photo Viewer
+This repository is not an official ImageGlass download. Official ImageGlass builds are published only by d2phap.
 
-ImageGlass is a fast, modern, open-source image viewer for Windows, macOS, and Linux. It pairs high-performance rendering with a smooth, immersive viewing experience and powerful tools for everyday users and designers alike, with seamless navigation across 90+ image formats, including `WEBP`, `JXL`, `SVG`, `HEIC`, `AVIF`, `HDR`, and raw images.
+## Download and run
 
-Built enterprise-ready, ImageGlass Pro supports managed deployment through preset config files that work across every platform and package. IT teams can roll out a preconfigured app config, enforce admin-locked settings, and lock individual features on every managed device.
+The Windows x64 build is a zip. No installer.
 
-<br/>
+1. Open the latest release: <https://github.com/ghostltx/LiteGlass/releases/latest>
+2. Download `LiteGlass-win-x64-portable.zip` (and, if you want to check it yourself, `LiteGlass-win-x64-portable.zip.sha256`).
+3. Extract the zip to a writable folder.
+4. Double-click `LiteGlass.exe`.
 
-[![Total downloads](https://img.shields.io/github/downloads/d2phap/imageglass/total?color=%23d60068&label=Total%20downloads&)](https://imageglass.org/pricing)
-[![Latest version downloads](https://img.shields.io/github/downloads/d2phap/imageglass/latest/total?color=%23e66700&label=Latest%20version&)](https://imageglass.org/pricing)
+An empty `.igportable` file next to the executable stores settings in that same folder (`igconfig.json`, cache, logs). Move the folder and the settings move with it. Do not put it in a read-only location such as `Program Files`.
 
-[![Discord](https://img.shields.io/discord/818852544859209748?label=chat&logo=discord&color=%233097B8&style=social)](https://discord.gg/tWjbynH2X8)
-[![Twitter Follow](https://img.shields.io/twitter/follow/d2phap?style=social)](https://twitter.com/d2phap)
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/imageglass/localized.svg)](https://crowdin.com/project/imageglass)
+### Updates
 
-<br/>
+- After the first image is shown, LiteGlass asks GitHub, at most once per day, whether `ghostltx/LiteGlass` has a newer portable zip. The request is only the public releases API. No telemetry, news, or store call is made.
+- If a newer build exists, the zip is downloaded in the background and checked against the release size and SHA-256.
+- The next launch applies that zip before the window opens, then starts the new build. `igconfig.json`, `.igportable`, and the cache/log folders are kept.
+- You can apply it immediately from the main menu or the About window: **Install update and restart**. There is no popup.
+- **Check for updates** is still in the Help menu, About, and Settings, if you want to look now.
+- Settings → **Check for update automatically** turns the daily check off. It is on by default.
 
-[**🌐 Website**](https://imageglass.org) &nbsp;•&nbsp;
-[**📥 Pricing**](https://imageglass.org/pricing) &nbsp;•&nbsp;
-[**🧩 Plugins**](https://imageglass.org/plugins) &nbsp;•&nbsp;
-[**📐 Tools**](https://imageglass.org/tools) &nbsp;•&nbsp;
-[**📚 Docs**](https://imageglass.org/docs) &nbsp;•&nbsp;
-[**💬 Support**](https://imageglass.org/support)
+The release asset names the updater expects are:
 
-<br/>
+- `LiteGlass-win-x64-portable.zip`
+- `LiteGlass-win-x64-portable.zip.sha256` (hex SHA-256, optionally followed by the file name)
 
-[![ImageGlass 10](https://github.com/user-attachments/assets/ca49c1be-4ab6-4714-b23b-8b094b5eda90)](https://imageglass.org/news/introducing-imageglass-10-rebuilt-for-speed-and-cross-platform-support-107)
+GitHub's own asset `digest` (`sha256:…`) is used when it is present, so the sidecar is only a fallback. The version compared with the running build is the release tag, such as `v1.0.0.1`, without the leading `v`. That version is compiled into the executable from `source/Directory.Build.props` (`IgVersion`).
 
-</div>
+## What changed
 
-<br/>
+- User-visible name is LiteGlass. Namespaces in the code stay `ImageGlass` so the fork can track upstream. The About window credits ImageGlass and d2phap.
+- Startup no longer checks ImageGlass servers, sends usage statistics, opens a welcome image, or runs the first-run wizard. Store, donation, and Pro pitches are not shown.
+- Color management defaults to the current monitor profile, and that profile is also applied to images that have no embedded profile. Embedded ICC profiles, including JPEG, TIFF, PSD, and CMYK (through the existing Magick path), are still honored.
+- `.ai`, `.eps`, `.pdf`, and `.dwg` are registered with the built-in formats.
+- The portable zip and its hash are built by `.github/workflows/liteglass-portable.yml`.
 
+Core viewing is unchanged: zoom and pan, folder browsing, rotate and flip, copy, open with, and basic metadata.
 
-<table>
-<tr valign="top">
-<td width="25%" align="center"><a target="_blank" href="https://buy.stripe.com/dRmfZh2wJaCSaOB1h7fUQ09?client_reference_id=pro-individual__onetime__imageglass-10-0-6-906-66"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pricing/pro-individual-dark.svg"/>
-  <img src=".github/assets/pricing/pro-individual.svg" width="100%" alt="Pro Individual: $14.90 one-time, 1 user or device, Pro license, Pro v10.x updates"/>
-</picture></a></td>
-<td width="25%" align="center"><a target="_blank" href="https://buy.stripe.com/6oU8wP5IVh1g4qdcZPfUQ0a?client_reference_id=pro-team__onetime__imageglass-10-0-6-906-66"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pricing/pro-team-dark.svg"/>
-  <img src=".github/assets/pricing/pro-team.svg" width="100%" alt="Pro Team: $69 one-time, up to 3 users, Commercial Pro license, Pro v10.x updates"/>
-</picture></a></td>
-<td width="25%" align="center"><a target="_blank" href="https://imageglass.org/pricing"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pricing/pro-business-dark.svg"/>
-  <img src=".github/assets/pricing/pro-business.svg" width="100%" alt="Pro Business: volume pricing by number of users, invoiced for 1–3 years, Commercial Pro license, all versions, priority support"/>
-</picture></a></td>
-<td width="25%" align="center"><a target="_blank" href="https://imageglass.org/download"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pricing/classic-dark.svg"/>
-  <img src=".github/assets/pricing/classic.svg" width="100%" alt="Classic: free, unlimited users, GPLv3 license, all versions, community support"/>
-</picture></a></td>
-</tr>
-</table>
+## Formats
 
-👉 Compare all plans and features at [imageglass.org/pricing](https://imageglass.org/pricing).
+Everything ImageGlass 10 already opens is still registered, including PSD, RAW, HEIC, AVIF, JPEG XL, WebP, SVG, and TIFF. Codecs that ImageGlass loads from optional plugins (for example a separate AVIF plugin) behave as they do upstream: the extension is listed, and a plugin is required when the built-in decoders cannot read that file.
 
-<br/>
+Added in LiteGlass:
 
+| Extension | How it opens | Limit |
+| --- | --- | --- |
+| `.pdf` | PDFium, bundled, BSD license | First page only |
+| `.ai` | PDFium, when the file contains the PDF stream Illustrator writes by default | Legacy PostScript-only `.ai` is refused with an error |
+| `.eps` | PDFium when a PDF stream is present; otherwise the TIFF or WMF preview in a DOS EPS header | Pure PostScript, with no preview, is refused. Ghostscript is not bundled |
+| `.dwg` | LibreDWG `dwg2SVG`, bundled, then drawn as SVG | Best effort. Complicated drawings can be incomplete. The converter is stopped after 20 seconds so the viewer does not hang |
 
-> [!Caution]
-> ### Security Alert: Beware of Fake ImageGlass Downloads
-> Malicious campaigns are using AI tools to impersonate trusted software through fake GitHub profiles, forks, and Gists that spread malware. Download ImageGlass only from its official sources:
-> - Website: [**imageglass.org**](https://imageglass.org)
-> - GitHub: [**github.com/d2phap/ImageGlass**](https://github.com/d2phap/ImageGlass) and the [**github.com/ImageGlass**](https://github.com/ImageGlass)
->
-> Any other repo, fork, or Gist offering ImageGlass builds is not mine. Always check the URL before downloading.
+PDFium is downloaded at build time from [bblanchon/pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) and placed next to `LiteGlass.exe`. LibreDWG is taken from the MSYS2 UCRT64 package and placed in `libredwg\`. If that tool is missing, opening a DWG shows an error instead of crashing.
 
-<br/>
+## Build
 
+The workflow runs on GitHub:
 
-## Features
-Primarily a photo viewer, ImageGlass offers a wide array of features geared toward image viewing, along with some focused editing capabilities. Here are some of the key features:
-- Supports [90+ image formats](https://imageglass.org/docs/supported-formats) out of the box
-- Hardware-aware smart caching
-- Super-fast image browsing with Turbo mode
-- Slideshow with random interval and sound notification
-- Native SVG and SVGZ vector rendering
-- Animated GIF, WEBP, and SVG playback
-- Color management and basic HDR support
-- Different cursor-precise zoom modes with flexible image interpolations
-- Different window modes: Frameless, Window Fit, Full screen
-- Built-in Tools: Rotate, Flip, Crop, Resize, Color Picker, Frame Navigation, Lossless compression...
-- EXIF metadata viewing through the [ExifGlass tool](https://github.com/d2phap/ExifGlass)
-- Touch gestures for zoom and pan
-- Themes, layouts, and custom hotkeys
-- Custom action binding for toolbar, mouse...
-- [Plugins](https://imageglass.org/plugins) and [external tools](https://imageglass.org/tools) support via [ImageGlass.SDK](https://github.com/ImageGlass/SDK)
-- Managed deployment with [preset app config](https://imageglass.org/docs/app-configs), admin-locked settings, and feature lock, for all platforms and packages (Available for Pro only)
-- Windows: Explorer sort order support
-- Windows: Custom file type icon pack (Not available for Store release)
+1. `dotnet test` for version comparison, release JSON parsing, the updater script's preserved files, PDF/EPS sniffing, and the format list.
+2. A self-contained Windows x64 publish of `ImageGlass.Win32` (the executable name is `LiteGlass.exe`), then `source/__assets/win/script-pack-win-zip.ps1`.
+3. A GitHub Release on this repository whose assets use the names above.
 
-👉 Visit https://imageglass.org/docs/features to explore all features of ImageGlass.
+Locally, from `source`, on Windows with the .NET 11 SDK:
 
-<br/>
+```powershell
+pwsh __assets/win/script-pack-win-zip.ps1 -Platform x64
+```
 
+Put `pdfium.dll` in `__assets/win/native/x64/` and `dwg2SVG.exe` plus its DLLs in `__assets/win/native/x64/libredwg/` before packing if you want those formats in a local zip.
 
-## Plugins & Tools
-Extend ImageGlass with codec plugins that open more image formats, and with tools that work alongside it.
+## License
 
+GPL-3.0-or-later, the same license as ImageGlass. See [LICENSE](LICENSE). Third-party pieces keep their own licenses; they are listed in the About window (Avalonia, SkiaSharp, Magick.NET, PDFium, LibreDWG, and the rest of the ImageGlass stack).
 
-| Plugin | Author | Description | Platforms |
-| :--- | :--- | :--- | :--- |
-| [AVIF Codec](https://github.com/aplefull/imageglass-avif-plugin) | [aplefull](https://github.com/aplefull) | Opens still and animated `.avif` files, using libavif, dav1d and libyuv | Windows, macOS, Linux |
-| [WIC Codec](https://github.com/d2phap/wic-imageglass-plugin) | [d2phap](https://github.com/d2phap) | Brings the Windows Imaging Component in as a native codec, including JPEG XR (`.jxr`, `.hdp`, `.wdp`) | Windows |
-| [APNG Codec](https://github.com/d2phap/apng-imageglass-plugin) | [d2phap](https://github.com/d2phap) | Plays animated `.apng` files | Windows, macOS, Linux |
-| [ITHMB Codec](https://github.com/B67687/Imageglass-Ithmb-Plugin) | [B67687](https://github.com/B67687) | Decodes `.ithmb` thumbnail files using [Ithmb-Codec](https://github.com/B67687/Ithmb-Codec) | Windows, macOS, Linux |
+---
 
+# LiteGlass（简体中文）
 
-| Tool | Author | Description | Platforms |
-| :--- | :--- | :--- | :--- |
-| [ExifGlass](https://github.com/d2phap/ExifGlass) | [d2phap](https://github.com/d2phap) | Reads the camera settings, lens, location, and color profile in any photo | Windows, macOS, Linux |
-| [FewerPhotos](https://imageglass.org/fewerphotos) | [d2phap](https://github.com/d2phap) | Cleans up the photo folders you already have: duplicates, blurry shots, and sorting by date | Windows, macOS |
+LiteGlass 是 [ImageGlass](https://github.com/d2phap/ImageGlass)（作者 Dương Diệu Pháp / d2phap）的一个轻量便携分支，许可证仍是 GPL-3.0。目标是尽快打开图片、默认做好色彩管理，并在 ImageGlass 已支持的格式之外，尽量打开 PDF 兼容的 Illustrator 文件，以及对 AutoCAD 图纸做尽力而为的预览。
 
-👉 Browse the [plugins](https://imageglass.org/plugins) and [tools](https://imageglass.org/tools), or build your own with [ImageGlass.SDK](https://imageglass.org/docs/codec-plugins).
+本仓库不是 ImageGlass 的官方下载站。官方安装包只由 d2phap 发布。
 
-<br/>
+## 下载与运行
 
+Windows x64 版本是一个压缩包，不需要安装程序。
 
-## System Requirements
-**Version 10**
-- Windows 10/11 x64 or arm64, version 1809 (build 17763) or later
-- macOS 14+, Apple Silicon arm64
-- Linux Desktop X11 x64: Ubuntu 20.04+, Linux Mint 20+, Debian 11+, Fedora 30+, RHEL/Alma/Rocky 9+,...
+1. 打开最新发布：<https://github.com/ghostltx/LiteGlass/releases/latest>
+2. 下载 `LiteGlass-win-x64-portable.zip`。需要自行校验时，一并下载 `LiteGlass-win-x64-portable.zip.sha256`。
+3. 解压到可写文件夹。
+4. 双击 `LiteGlass.exe`。
 
-**Version 9**
-- Windows 10/11 x64 or arm64, version 1809 (build 17763) or later
-- Optional: [WebView2 Runtime 64-bit v119.0.2151 or later](https://go.microsoft.com/fwlink/p/?LinkId=2124703)
+可执行文件旁边的空文件 `.igportable` 会让设置保存在同一目录（`igconfig.json`、缓存、日志）。整个文件夹可以拷走，设置跟着走。不要放进 `Program Files` 这种只读位置。
 
-<br/>
+### 更新
 
+- 第一张图片显示之后，LiteGlass 每天最多向 GitHub 查询一次 `ghostltx/LiteGlass` 是否有更新的便携包。请求只访问公开的 Releases API，不发送统计、新闻或商店信息。
+- 若有新版本，会在后台下载压缩包，并按发布页上的文件大小和 SHA-256 校验。
+- 下次启动时，在主窗口出现之前完成替换，然后启动新版本。`igconfig.json`、`.igportable` 以及缓存、日志目录会保留。
+- 也可以立刻安装：主菜单或“关于”窗口里的 **Install update and restart**（安装更新并重启）。没有弹窗。
+- 帮助菜单、关于窗口和设置里仍有 **检查更新**，需要时可以手动查看。
+- 设置中的 **自动检查更新** 默认开启。关掉之后就不会再访问网络。
 
-## Development
-The `develop` branch contains the latest commits, while the `prod` branch holds the final stable release.
+更新程序认这些资源名：
 
-**Version 10**: Located in `source` folder
-- Visual Studio 2026 for Windows build
-- VS Code for macOS, Linux build
-- Run a task from VS Code to build, publish, or pack the app
-  + Note: for debug builds, copy the contents of `source/__assets/__app/` into the build output folder, beside the ImageGlass executable, before launching it.
+- `LiteGlass-win-x64-portable.zip`
+- `LiteGlass-win-x64-portable.zip.sha256`（十六进制 SHA-256，后面可以跟文件名）
 
-**Version 9**: Located in `v9` folder
-- Visual Studio 2026 on Windows 11
-- VS Code for `WebUI`
+如果 GitHub 在资源上提供了 `digest`（`sha256:…`），会优先使用它。用来比较的版本号是发布标签，例如 `v1.0.0.1`（比较时去掉开头的 `v`）。这个版本在编译时写入程序，来源是 `source/Directory.Build.props` 的 `IgVersion`。
 
-<br/>
+## 相对 ImageGlass 的改动
 
+- 界面上的名称是 LiteGlass。代码命名空间仍是 `ImageGlass`，方便跟随上游。关于窗口保留对 ImageGlass 与 d2phap 的署名。
+- 启动时不再访问 ImageGlass 的服务器，不发送使用统计，不显示欢迎图，也不再跑首次向导。商店、捐赠和 Pro 提示已去掉。
+- 色彩管理默认使用当前显示器配置文件；没有内嵌配置文件的图片也会套用它。JPEG、TIFF、PSD 的内嵌 ICC，以及 CMYK（仍走原来的 Magick 路径）会继续被识别。
+- `.ai`、`.eps`、`.pdf`、`.dwg` 已加入支持格式列表。
+- 便携包和校验文件由 `.github/workflows/liteglass-portable.yml` 构建并发布。
 
-## Roadmap
+看图所需的功能还在：缩放与平移、文件夹浏览、旋转与翻转、复制、用其他程序打开，以及基本元数据。
 
-[![ImageGlass 2026 roadmap](.github/assets/ig_roadmap.svg)](https://github.com/d2phap/ImageGlass/discussions/2287)
+## 格式
 
-<br/>
+ImageGlass 10 原本登记的格式都还在，包括 PSD、RAW、HEIC、AVIF、JPEG XL、WebP、SVG 和 TIFF。上游靠可选插件才能解码的格式（例如单独的 AVIF 插件）行为不变：扩展名在列表里，内置解码器读不了时仍需要插件。
 
+LiteGlass 新增：
 
-## This project needs your help!
+| 扩展名 | 打开方式 | 限制 |
+| --- | --- | --- |
+| `.pdf` | 随程序附带的 PDFium（BSD） | 只渲染第一页 |
+| `.ai` | 文件里有 Illustrator 默认写入的 PDF 流时，用 PDFium | 只有旧式 PostScript、没有 PDF 的 `.ai` 会提示错误 |
+| `.eps` | 有 PDF 流时用 PDFium；否则读取 DOS EPS 头里的 TIFF 或 WMF 预览 | 没有预览的纯 PostScript 会提示错误。不附带 Ghostscript |
+| `.dwg` | 附带的 LibreDWG `dwg2SVG` 转成 SVG 再绘制 | 尽力而为。复杂图纸可能不完整。转换超过 20 秒会被中止，避免查看器卡住 |
 
-If you find ImageGlass useful and would like to support its ongoing development, please consider making a donation or purchase Pro edition. Your support — whether financial or simply sharing ImageGlass with others — means the world to me. Every bit helps keep the project alive for everyone.
+构建时会从 [bblanchon/pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) 下载 PDFium，并放在 `LiteGlass.exe` 旁边。LibreDWG 来自 MSYS2 的 UCRT64 包，放在 `libredwg\`。如果找不到该工具，打开 DWG 会显示错误，而不是崩溃。
 
-#### 👉 Explore the ways to support at [imageglass.org/donate](https://imageglass.org/donate).
+## 构建
 
+GitHub 上的工作流会：
+
+1. 运行 `dotnet test`，覆盖版本比较、发布 JSON 解析、更新脚本要保留的文件、PDF/EPS 识别，以及格式列表。
+2. 以自包含方式发布 Windows x64 的 `ImageGlass.Win32`（可执行文件名为 `LiteGlass.exe`），再运行 `source/__assets/win/script-pack-win-zip.ps1`。
+3. 在本仓库创建 GitHub Release，资源名如上。
+
+在已安装 .NET 11 SDK 的 Windows 上，于 `source` 目录执行：
+
+```powershell
+pwsh __assets/win/script-pack-win-zip.ps1 -Platform x64
+```
+
+若希望本地压缩包包含新格式，打包前请把 `pdfium.dll` 放到 `__assets/win/native/x64/`，并把 `dwg2SVG.exe` 及其 DLL 放到 `__assets/win/native/x64/libredwg/`。
+
+## 许可证
+
+GPL-3.0 或更高版本，与 ImageGlass 相同。见 [LICENSE](LICENSE)。第三方组件保留各自的许可证，并在关于窗口中列出（Avalonia、SkiaSharp、Magick.NET、PDFium、LibreDWG，以及 ImageGlass 其余依赖）。

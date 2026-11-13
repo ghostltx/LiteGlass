@@ -812,7 +812,8 @@ public partial class ToolbarControl : PhControl
 
         // Pro licensing: one item per state; an expired license is managed, not pitched
         var isManagingLicense = Core.IsProEnabled || Core.ExpiredLicense is not null;
-        PART_MnuUpgradeLicense.IsVisible = !isManagingLicense;
+        // LiteGlass does not pitch the store or a Pro upgrade.
+        PART_MnuUpgradeLicense.IsVisible = false;
         PART_MnuManageLicense.IsVisible = isManagingLicense;
 
         RefreshPendingUpdateState();

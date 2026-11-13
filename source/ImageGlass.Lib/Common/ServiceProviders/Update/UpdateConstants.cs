@@ -25,12 +25,12 @@ internal static class UpdateConstants
     /// <summary>
     /// Update metadata endpoint (HTTPS only).
     /// </summary>
-    public const string MetadataUrl = "https://imageglass.org/url/update";
+    public const string MetadataUrl = "https://api.github.com/repos/ghostltx/LiteGlass/releases/latest";
 
     /// <summary>
     /// Fallback URL when update check fails.
     /// </summary>
-    public const string FallbackReleasesUrl = "https://github.com/d2phap/ImageGlass/releases";
+    public const string FallbackReleasesUrl = "https://github.com/ghostltx/LiteGlass/releases";
 
     /// <summary>
     /// Microsoft Store product page. The Store owns updating for that package, so its build sends
@@ -98,11 +98,10 @@ internal static class UpdateConstants
     /// <summary>
     /// Default background check interval (7 days).
     /// </summary>
-    public static readonly TimeSpan BackgroundCheckInterval = TimeSpan.FromDays(7);
+    public static readonly TimeSpan BackgroundCheckInterval = TimeSpan.FromDays(1);
 
     /// <summary>
-    /// Upper bound of the random offset added to <see cref="BackgroundCheckInterval"/> (24 hours),
-    /// so same-cadence installs do not all check on the same day.
+    /// No jitter: the background check runs at most once per day.
     /// </summary>
-    public const int CheckJitterMinutes = 24 * 60;
+    public const int CheckJitterMinutes = 0;
 }

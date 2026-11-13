@@ -20,6 +20,7 @@ using Avalonia;
 using Avalonia.Input;
 using ImageGlass.Common;
 using ImageGlass.Common.Loggers;
+using ImageGlass.Common.ServiceProviders.Update;
 using ImageGlass.ViewModels;
 using ImageGlass.Win32.Common.ServiceProviders;
 using ImageGlass.Win32.Windows;
@@ -37,6 +38,9 @@ sealed class Program
     {
         StartupTrace.Mark("Main:start");
         Core.BuildInfo = new AppBuildInfo();
+
+        // A staged portable zip is swapped in before any window or image work.
+        if (LiteGlassUpdateApply.TryLaunchStagedUpdate()) return 0;
 
         // must precede InitializeAppInstance: the license is resolved in there, before the
         // providers below are installed

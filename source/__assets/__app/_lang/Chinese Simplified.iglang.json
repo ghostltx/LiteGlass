@@ -355,7 +355,7 @@
     "Settings_EnableFileWatcher": "监控文件夹中的文件更改并实时更新",
     "Settings_EnableAutoOpenNewAddedImage": "自动打开新添加的图像",
     "Settings_AppUpdate": "应用更新",
-    "Settings_AutoUpdate_Description": "更新检查会附带一条简短的匿名消息，用于帮助改进 ImageGlass。 该消息不包含姓名、账户、标识符，也不涉及您的任何文件。 关闭此选项将完全停止消息传输。",
+    "Settings_AutoUpdate_Description": "第一张图片显示之后，LiteGlass 每天最多向 GitHub 查询一次 ghostltx/LiteGlass 是否有新的便携版。除此之外不发送任何数据。关闭此选项即完全停止检查。",
     "Settings_SeeWhatIsSent": "查看发送的具体内容…",
     "Settings_Others": "其它",
     "Settings_AutoUpdate": "自动检查更新",

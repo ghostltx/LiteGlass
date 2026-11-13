@@ -182,10 +182,9 @@ public partial class UpdateWindow : ModalWindow
     /// </summary>
     private void ShowProPitch()
     {
-        PART_ProAdCard.IsVisible = !Core.IsProEnabled && !IsMsStoreBuild;
-
-        // the Store route only exists on Windows, and only for a build that is not already from it
-        PART_BtnProStore.IsVisible = PART_ProAdCard.IsVisible && BHelper.OS == OSType.Windows;
+        PART_ProAdCard.IsVisible = false;
+        PART_BtnProStore.IsVisible = false;
+        PART_BtnUpgradePro.IsVisible = false;
     }
 
 

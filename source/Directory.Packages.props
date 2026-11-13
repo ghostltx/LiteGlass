@@ -35,5 +35,8 @@
     <PackageVersion Include="System.IO.Hashing" Version="11.0.0" />
     <!-- the version Avalonia.FreeDesktop brings, so the Linux print portal shares its D-Bus library -->
     <PackageVersion Include="Tmds.DBus.Protocol" Version="0.95.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>
 </Project>

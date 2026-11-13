@@ -76,14 +76,14 @@ public partial class GeneralSettingsView : SettingsPageView
         BindAutoUpdateToggle(PART_AutoUpdate, ConfigId.AutoUpdate,
             LangId.Settings_AutoUpdate, LangId.Settings_AppUpdate);
         BindLink(PART_SeeWhatIsSent, LangId.Settings_SeeWhatIsSent, ShowUsageStatsPreview);
+        PART_SeeWhatIsSent.IsVisible = false;
 
         BindToggle(PART_AutoInstallUpdate, ConfigId.EnableAutoInstallUpdate,
             LangId.Settings_EnableAutoInstallUpdate, LangId.Settings_AppUpdate);
         ProGate(ConfigId.EnableAutoInstallUpdate, PART_AutoInstallUpdateBadge, PART_AutoInstallUpdate);
 
-        // nothing to offer on a channel that cannot install its own updates, or when an admin locked it
-        var canSelfUpdate = Core.UpdateProvider.CanInstallUpdate;
-        PART_AutoInstallUpdateRow.IsVisible = canSelfUpdate;
+        // One toggle covers the daily check and the silent download. There is no separate install switch.
+        PART_AutoInstallUpdateRow.IsVisible = false;
         SetLocalizedText(PART_CheckForUpdate, LangId._CheckForUpdate);
         PART_CheckForUpdate.Click += (_, _) => CheckForUpdate();
         PART_CheckForUpdate.IsVisible = !FeatureManager.IsLocked(API.IG_CheckForUpdate);

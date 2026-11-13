@@ -179,11 +179,7 @@ public partial class App : Application
             MainWindow.Show();
             StartupTrace.Mark("MainWindow:show");
 
-            // an expired license leaves the app in Classic: say so and offer the ways out
-            ShowExpiredLicenseNotice();
-
-            // an update that died mid-install would otherwise re-arm itself silently on every launch
-            _ = ReportFailedUpdateAsync();
+            // LiteGlass does not show license, store, or update dialogs at startup.
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -599,9 +595,23 @@ public partial class App : Application
     private static async Task InitializeUpdateProviderAsync()
     {
         await _updateReconcileTask;
+    }
 
-        // silent check handles disabled/interval logic
-        _ = await Core.API.RunApiAsync(API.IG_CheckForUpdate, "false");
+
+    private static int _backgroundUpdateArmed;
+
+
+    /// <summary>
+    /// Queues the once-a-day GitHub check after the first image is on screen, or when there is nothing to open.
+    /// </summary>
+    public static void ScheduleBackgroundUpdateCheck()
+    {
+        if (Interlocked.Exchange(ref _backgroundUpdateArmed, 1) != 0) return;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            _ = AppAPIProvider.IG_CheckForUpdateAsync(false);
+        }, DispatcherPriority.Background);
     }
 
 

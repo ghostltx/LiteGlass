@@ -407,6 +407,11 @@ public partial class MainWindowView : PhControl
             _ = PART_Message.ShowAsync(null);
         }
 
+        if (e.Photo.Error is not null || e.State == PhotoState.Loaded)
+        {
+            App.ScheduleBackgroundUpdateCheck();
+        }
+
         UpdateMotionButtonState();
     }
 
@@ -835,6 +840,7 @@ public partial class MainWindowView : PhControl
             }
             else
             {
+                App.ScheduleBackgroundUpdateCheck();
                 return;
             }
         }

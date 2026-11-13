@@ -922,8 +922,8 @@ public class Lang
         new(LangId.Menu_MnuCheckForUpdate_ReadyToInstall, "Update ready to install"), //v10.0
         new(LangId.Menu_MnuCheckForUpdate_Downloading, "Downloading the update…"), //v10.0
         new(LangId.Menu_MnuCheckForUpdate_Installing, "Installing the update…"), //v10.0
-        new(LangId.Menu_MnuInstallUpdate, "Install update…"), //v10.0
-        new(LangId.Menu_MnuInstallUpdate_Confirm, "ImageGlass will close and reopen to finish the update."), //v10.0
+        new(LangId.Menu_MnuInstallUpdate, "Install update and restart"), //v10.0
+        new(LangId.Menu_MnuInstallUpdate_Confirm, "LiteGlass will close and reopen to finish the update."), //v10.0
         new(LangId.Menu_MnuCheckForUpdate_ProFromStore, "Get ImageGlass Pro from Store"), // v10.0
 
         new(LangId.Menu_MnuSetDefaultPhotoViewer, "Set default photo viewer"), //v9.0
@@ -988,7 +988,7 @@ public class Lang
 
         // General > App update
         new(LangId.Settings_AppUpdate, "App update"),
-        new(LangId.Settings_AutoUpdate_Description, "The update check also includes a short anonymous message that helps improve ImageGlass. It contains no name, no account, and no identifier, and nothing about your files. Turning this off stops it completely."),
+        new(LangId.Settings_AutoUpdate_Description, "Once a day, after the first image is shown, LiteGlass asks GitHub if ghostltx/LiteGlass has a newer portable build. Nothing else is sent. Turning this off stops the check completely."),
         new(LangId.Settings_SeeWhatIsSent, "See exactly what is sent…"),
         new(LangId.Settings_EnableAutoInstallUpdate, "Download and install updates automatically"), //v10.0
 

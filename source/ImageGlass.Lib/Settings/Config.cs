@@ -285,7 +285,7 @@ public partial class Config : PhReactive
     /// </summary>
     public bool EnableWelcomeImage
     {
-        get => Get(ConfigId.EnableWelcomeImage, true);
+        get => Get(ConfigId.EnableWelcomeImage, false);
         set => Set(ConfigId.EnableWelcomeImage, value);
     }
 
@@ -322,7 +322,7 @@ public partial class Config : PhReactive
     /// </summary>
     public bool EnableAlwaysApplyColorProfile
     {
-        get => Get(ConfigId.EnableAlwaysApplyColorProfile, false);
+        get => Get(ConfigId.EnableAlwaysApplyColorProfile, true);
         set => Set(ConfigId.EnableAlwaysApplyColorProfile, value);
     }
 
@@ -489,7 +489,7 @@ public partial class Config : PhReactive
     /// </summary>
     public double QuickSetupVersion
     {
-        get => Get(ConfigId.QuickSetupVersion, 0d);
+        get => Get(ConfigId.QuickSetupVersion, Const.QUICK_SETUP_VERSION);
         set => Set(ConfigId.QuickSetupVersion, value);
     }
 

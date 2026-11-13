@@ -39,6 +39,19 @@ public partial class AboutWindow : DialogWindow
 
 
     private const string _creditContent = """
+        ◍ ImageGlass                                      GPLv3 license
+          https://github.com/d2phap/ImageGlass
+          Copyright (c) 2010-2027 Dương Diệu Pháp
+          LiteGlass is a lightweight fork of ImageGlass.
+
+        ◍ PDFium                                          BSD license
+          https://pdfium.googlesource.com/pdfium/
+          Copyright 2014 The PDFium Authors
+
+        ◍ LibreDWG                                        GPLv3 license
+          https://github.com/LibreDWG/libredwg
+          Copyright (C) 2009-2026 Free Software Foundation, Inc.
+
         ◍ Avalonia                                         MIT licence 
           https://github.com/AvaloniaUI/Avalonia
           Copyright (c) AvaloniaUI OÜ All Rights Reserved
@@ -97,7 +110,7 @@ public partial class AboutWindow : DialogWindow
         DefaultFocus = DialogFocus.Button1;
         ShowInTaskbar = true;
 
-        PART_LblCopyright.Text = $"Copyright © 2010-{DateTime.UtcNow.Year} Dương Diệu Pháp";
+        PART_LblCopyright.Text = $"LiteGlass, a fork of ImageGlass. Copyright © 2010-{DateTime.UtcNow.Year} Dương Diệu Pháp";
         PART_LblCreditContent.Text = _creditContent;
 
         SetupEditionChip();
@@ -107,11 +120,15 @@ public partial class AboutWindow : DialogWindow
         PhButton[] linkButtons = [PART_BtnWebsite, PART_BtnGitHub, PART_BtnEula, PART_BtnPrivacy];
         foreach (var btn in linkButtons) btn.Padding = new Thickness(6, 2);
 
-        PART_BtnWebsite.Click += (_, _) => OpenUrl("https://imageglass.org");
-        PART_BtnGitHub.Click += (_, _) => OpenUrl("https://github.com/d2phap/ImageGlass");
-        PART_BtnEula.Click += (_, _) => OpenUrl("https://imageglass.org/license");
-        PART_BtnPrivacy.Click += (_, _) => OpenUrl("https://imageglass.org/privacy");
-        PART_BtnDonate.Click += (_, _) => OpenUrl("https://imageglass.org/donate");
+        PART_BtnWebsite.Click += (_, _) => OpenUrl("https://github.com/d2phap/ImageGlass");
+        PART_BtnGitHub.Click += (_, _) => OpenUrl("https://github.com/ghostltx/LiteGlass");
+        PART_BtnEula.Click += (_, _) => OpenUrl("https://www.gnu.org/licenses/gpl-3.0.html");
+        PART_BtnPrivacy.IsVisible = false;
+        PART_BtnDonate.IsVisible = false;
+        PART_BtnInstallUpdate.Click += async (_, _) =>
+        {
+            _ = await Core.API.RunApiAsync(API.IG_InstallUpdate, "false");
+        };
 
         PART_BtnCheckForUpdate.Click += async (_, _) =>
         {
@@ -151,12 +168,14 @@ public partial class AboutWindow : DialogWindow
 
         PART_LblSlogan.Text = Core.Lang[LangId._Slogan];
         PART_LblCredits.Text = Core.Lang[LangId._Credits];
-        PART_BtnWebsite.Text = Core.Lang[LangId._Homepage];
-        PART_BtnGitHub.Text = "GitHub";
+        PART_BtnWebsite.Text = "ImageGlass";
+        PART_BtnGitHub.Text = "LiteGlass";
         PART_BtnEula.Text = Core.Lang[LangId._License];
         PART_BtnPrivacy.Text = Core.Lang[LangId._Privacy];
         PART_BtnDonate.Text = "❤️ " + Core.Lang[LangId._Donate];
         PART_BtnCheckForUpdate.Text = Core.Lang[LangId._CheckForUpdate];
+        PART_BtnInstallUpdate.Text = Core.Lang[LangId.Menu_MnuInstallUpdate];
+        PART_BtnInstallUpdate.IsVisible = Core.UpdateProvider.CanApplyPendingUpdate;
 
         // the edition name is not translatable, but the tooltip says what clicking it does
         ToolTip.SetTip(PART_BtnEdition, Core.Lang[Core.IsProEnabled
