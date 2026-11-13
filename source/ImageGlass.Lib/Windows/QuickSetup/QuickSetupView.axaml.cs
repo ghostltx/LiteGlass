@@ -126,8 +126,7 @@ public partial class QuickSetupView : PhControl
         else PART_StepAppMenu.IsVisible = false;
 
         // step 4 pitches Pro, so there is nothing to show once it is active
-        if (!Core.IsProEnabled) _stepPanels.Add(PART_Step4);
-        else PART_Step4.IsVisible = false;
+        PART_Step4.IsVisible = false;
 
         BuildStepDots();
 

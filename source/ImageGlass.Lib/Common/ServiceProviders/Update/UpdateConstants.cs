@@ -41,7 +41,7 @@ internal static class UpdateConstants
     /// <summary>
     /// Pro pricing page, the online purchase route offered next to the Store one.
     /// </summary>
-    public const string ProPricingUrl = "https://imageglass.org/pricing";
+    public const string ProPricingUrl = "https://github.com/ghostltx/LiteGlass";
 
     /// <summary>
     /// Maximum metadata response size (1 MB).

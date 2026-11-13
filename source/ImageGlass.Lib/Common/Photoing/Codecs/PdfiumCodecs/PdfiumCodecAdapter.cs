@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using Avalonia;
+using ImageGlass.Common.Localization;
 using ImageGlass.Common.Types;
 using ImageMagick;
 using SkiaSharp;
@@ -124,13 +125,15 @@ public sealed class PdfiumCodecAdapter : PhDisposable, ICodec
 
         if (ext.Equals(".ai", StringComparison.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException(PdfiumLocator.AiNotPdfCompatibleMessage);
+            throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_AiNotPdf, PdfiumLocator.AiNotPdfCompatibleMessage));
         }
 
         if (ext.Equals(".eps", StringComparison.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException(
-                "This EPS file has no PDF stream and no TIFF or WMF preview. LiteGlass does not run PostScript.");
+            throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_EpsNoPreview,
+                "This EPS file has no PDF stream and no TIFF or WMF preview. LiteGlass does not run PostScript."));
         }
 
         throw new InvalidOperationException("This file is not a PDF that PDFium can open.");
@@ -146,7 +149,8 @@ public sealed class PdfiumCodecAdapter : PhDisposable, ICodec
         }
         catch (InvalidOperationException ex) when (IsAi(extension))
         {
-            throw new InvalidOperationException(PdfiumLocator.AiNotPdfCompatibleMessage, ex);
+            throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_AiNotPdf, PdfiumLocator.AiNotPdfCompatibleMessage), ex);
         }
 
         // No box had a size. Magick can still read some of these when Ghostscript is present.
@@ -159,7 +163,8 @@ public sealed class PdfiumCodecAdapter : PhDisposable, ICodec
         }
         catch (InvalidOperationException ex) when (IsAi(extension) && IsUnreadablePdf(ex))
         {
-            throw new InvalidOperationException(PdfiumLocator.AiNotPdfCompatibleMessage, ex);
+            throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_AiNotPdf, PdfiumLocator.AiNotPdfCompatibleMessage), ex);
         }
     }
 

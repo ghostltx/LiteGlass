@@ -41,7 +41,7 @@ public partial class PhLogo : PhControl
         InitializeComponent();
 
         // the edition cannot change while a window is open: importing a license restarts the app
-        PART_ProStar.IsVisible = Core.IsProEnabled;
+        PART_ProStar.IsVisible = false;
 
         ApplyLogoSize();
         UpdateLogo();

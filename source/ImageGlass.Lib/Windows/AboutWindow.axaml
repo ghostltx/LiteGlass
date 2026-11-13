@@ -47,7 +47,27 @@
                 </StackPanel>
             </Panel>
 
-            <!--  edition chip; text, variant, padding and cursor are set in code, see SetupEditionChip  -->
+            <TextBlock
+                x:Name="PART_LblMaintainer"
+                Margin="0,14,0,0"
+                HorizontalAlignment="Center"
+                FontWeight="SemiBold"
+                Text="Maintainer / 维护者" />
+            <TextBlock
+                Margin="0,2,0,0"
+                HorizontalAlignment="Center"
+                FontSize="18"
+                FontWeight="SemiBold"
+                Text="Xelias（吕铁鑫）" />
+            <ui:PhButton
+                x:Name="PART_BtnProject"
+                Margin="0,2,0,0"
+                HorizontalAlignment="Center"
+                Content="https://github.com/ghostltx/LiteGlass"
+                FontSize="{x:Static types:Const.FONT_SIZE_SMALL}"
+                Variant="Link" />
+
+            <!--  edition chip is unused in LiteGlass; kept so the generated field still exists  -->
             <ui:PhButton
                 x:Name="PART_BtnEdition"
                 MinWidth="0"
@@ -55,7 +75,8 @@
                 HorizontalAlignment="Center"
                 CornerRadius="20"
                 FontSize="{x:Static types:Const.FONT_SIZE_SMALL}"
-                FontWeight="SemiBold" />
+                FontWeight="SemiBold"
+                IsVisible="False" />
 
             <!--  version info  -->
             <SelectableTextBlock

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using Avalonia;
+using ImageGlass.Common.Localization;
 using ImageGlass.Common.Types;
 using SkiaSharp;
 using System;
@@ -103,7 +104,8 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
     private static SKImage Render(string filePath, CancellationToken cancellationToken)
     {
         var tool = DwgCommand.FindTool(BHelper.BasePath);
-        if (tool is null) throw new InvalidOperationException(DwgCommand.MissingToolMessage);
+        if (tool is null) throw new InvalidOperationException(LiteGlassLanguage.Text(
+            LangId.LiteGlass_DwgMissing, DwgCommand.MissingToolMessage));
 
         var svgPath = Path.Combine(Path.GetTempPath(), $"liteglass-{Guid.NewGuid():N}.svg");
         try
@@ -116,14 +118,15 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
 
             if (!File.Exists(svgPath) || new FileInfo(svgPath).Length == 0)
             {
-                throw new InvalidOperationException(DwgCommand.FailedMessage("LibreDWG did not write a drawing."));
+                throw new InvalidOperationException(LiteGlassLanguage.Text(
+                    LangId.LiteGlass_DwgFailed, DwgCommand.FailedMessage("LibreDWG did not write a drawing.")));
             }
 
             using var svg = SvgCodec.LoadSvg(svgPath);
-            var picture = svg.Picture ?? throw new InvalidOperationException(
-                DwgCommand.FailedMessage("The converted drawing had nothing to draw."));
-            return Rasterize(picture) ?? throw new InvalidOperationException(
-                DwgCommand.FailedMessage("The converted drawing had an empty page."));
+            var picture = svg.Picture ?? throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_DwgFailed, DwgCommand.FailedMessage("The converted drawing had nothing to draw.")));
+            return Rasterize(picture) ?? throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_DwgFailed, DwgCommand.FailedMessage("The converted drawing had an empty page.")));
         }
         finally
         {
@@ -165,7 +168,8 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
                 try { process.WaitForExit(2000); } catch { }
                 try { copy.GetAwaiter().GetResult(); } catch { }
                 try { _ = stderr.GetAwaiter().GetResult(); } catch { }
-                throw new InvalidOperationException(DwgCommand.TimeoutMessage);
+                throw new InvalidOperationException(LiteGlassLanguage.Text(
+                    LangId.LiteGlass_DwgTimeout, DwgCommand.TimeoutMessage));
             }
 
             process.WaitForExit(200);
@@ -179,7 +183,8 @@ public sealed class DwgCodecAdapter : PhDisposable, ICodec
 
         if (process.ExitCode != 0 && (!File.Exists(svgPath) || new FileInfo(svgPath).Length == 0))
         {
-            throw new InvalidOperationException(DwgCommand.FailedMessage(detail));
+            throw new InvalidOperationException(LiteGlassLanguage.Text(
+                LangId.LiteGlass_DwgFailed, DwgCommand.FailedMessage(detail)));
         }
     }
 

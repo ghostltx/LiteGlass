@@ -107,9 +107,8 @@ public partial class SettingsWindowView : PhControl
 
         if (PART_License is not null)
         {
-            PART_License.Text = "✦ " + Core.Lang[Core.IsProEnabled
-                ? LangId.Menu_MnuManageLicense
-                : LangId.Menu_MnuUpgradeLicense];
+            PART_License.IsVisible = false;
+            PART_License.Text = string.Empty;
         }
 
         // re-template the sidebar so the localized labels refresh
@@ -170,16 +169,10 @@ public partial class SettingsWindowView : PhControl
     }
 
 
-    private async void License_Click(object? sender, RoutedEventArgs e)
+    private void License_Click(object? sender, RoutedEventArgs e)
     {
-        try
-        {
-            _ = await new ManageLicenseWindow().ShowAsync(TopLevel.GetTopLevel(this) as PhWindow);
-        }
-        catch
-        {
-            // an async void handler must never reach the unhandled-error dialog
-        }
+        // The Pro upgrade dialog is not part of LiteGlass.
+        e.Handled = true;
     }
 
 

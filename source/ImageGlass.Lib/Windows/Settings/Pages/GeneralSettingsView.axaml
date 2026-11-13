@@ -12,6 +12,20 @@
 
     <StackPanel Orientation="Vertical">
 
+        <ui:PhTextBlock Classes="group" Text="语言 / Language" />
+        <StackPanel Margin="{DynamicResource SettingsGroupIndent}" Orientation="Horizontal" Spacing="8">
+            <ui:PhButton
+                x:Name="PART_LangZh"
+                MinWidth="120"
+                Content="简体中文"
+                Click="LanguageButton_Click" />
+            <ui:PhButton
+                x:Name="PART_LangEn"
+                MinWidth="120"
+                Content="English"
+                Click="LanguageButton_Click" />
+        </StackPanel>
+
         <!--  Links (no heading): locations on the left, actions on the right  -->
         <Grid
             ColumnDefinitions="Auto,Auto"

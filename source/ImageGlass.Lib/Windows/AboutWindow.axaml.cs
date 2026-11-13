@@ -110,7 +110,7 @@ public partial class AboutWindow : DialogWindow
         DefaultFocus = DialogFocus.Button1;
         ShowInTaskbar = true;
 
-        PART_LblCopyright.Text = $"LiteGlass, a fork of ImageGlass. Copyright © 2010-{DateTime.UtcNow.Year} Dương Diệu Pháp";
+        PART_LblCopyright.Text = $"GPL-3.0. LiteGlass is a fork of ImageGlass. Copyright © 2010-{DateTime.UtcNow.Year} Dương Diệu Pháp";
         PART_LblCreditContent.Text = _creditContent;
 
         SetupEditionChip();
@@ -120,8 +120,10 @@ public partial class AboutWindow : DialogWindow
         PhButton[] linkButtons = [PART_BtnWebsite, PART_BtnGitHub, PART_BtnEula, PART_BtnPrivacy];
         foreach (var btn in linkButtons) btn.Padding = new Thickness(6, 2);
 
-        PART_BtnWebsite.Click += (_, _) => OpenUrl("https://github.com/d2phap/ImageGlass");
-        PART_BtnGitHub.Click += (_, _) => OpenUrl("https://github.com/ghostltx/LiteGlass");
+        PART_BtnWebsite.IsVisible = false;
+        PART_BtnProject.Text = LiteGlassLanguage.ProjectUrl;
+        PART_BtnProject.Click += (_, _) => OpenUrl(LiteGlassLanguage.ProjectUrl);
+        PART_BtnGitHub.Click += (_, _) => OpenUrl(LiteGlassLanguage.ProjectUrl);
         PART_BtnEula.Click += (_, _) => OpenUrl("https://www.gnu.org/licenses/gpl-3.0.html");
         PART_BtnPrivacy.IsVisible = false;
         PART_BtnDonate.IsVisible = false;
@@ -168,8 +170,9 @@ public partial class AboutWindow : DialogWindow
 
         PART_LblSlogan.Text = Core.Lang[LangId._Slogan];
         PART_LblCredits.Text = Core.Lang[LangId._Credits];
-        PART_BtnWebsite.Text = "ImageGlass";
-        PART_BtnGitHub.Text = "LiteGlass";
+        PART_LblMaintainer.Text = "Maintainer / 维护者";
+        PART_BtnProject.Text = LiteGlassLanguage.ProjectUrl;
+        PART_BtnGitHub.Text = "GitHub";
         PART_BtnEula.Text = Core.Lang[LangId._License];
         PART_BtnPrivacy.Text = Core.Lang[LangId._Privacy];
         PART_BtnDonate.Text = "❤️ " + Core.Lang[LangId._Donate];
@@ -252,17 +255,7 @@ public partial class AboutWindow : DialogWindow
         }
 
         // owned by this dialog, not the main window, so it stacks on top of the modal About
-        PART_BtnEdition.Click += async (_, _) =>
-        {
-            try
-            {
-                _ = await new ManageLicenseWindow().ShowAsync(this);
-            }
-            catch
-            {
-                // an async void handler must never reach the unhandled-error dialog
-            }
-        };
+        PART_BtnEdition.IsVisible = false;
     }
 
 

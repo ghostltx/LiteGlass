@@ -540,6 +540,23 @@
                                 <ui:PhMenuItem Click="MainMenuItem_Click" LangKey="Menu_MnuPlugins" />
 
 
+                                <!--  Language: labels stay bilingual so either language can be chosen  -->
+                                <ui:PhMenuItem Header="-" />
+                                <ui:PhMenuItem x:Name="PART_MnuLanguage" Header="语言 / Language">
+                                    <ui:PhMenuItem
+                                        x:Name="PART_MnuLangZh"
+                                        Click="LanguageMenu_Click"
+                                        CommandParameter="zh"
+                                        Header="简体中文"
+                                        ToggleType="Radio" />
+                                    <ui:PhMenuItem
+                                        x:Name="PART_MnuLangEn"
+                                        Click="LanguageMenu_Click"
+                                        CommandParameter="en"
+                                        Header="English"
+                                        ToggleType="Radio" />
+                                </ui:PhMenuItem>
+
                                 <!--  Settings  -->
                                 <ui:PhMenuItem Header="-" />
                                 <ui:PhMenuItem Click="MainMenuItem_Click" LangKey="Menu_MnuSettings" />

@@ -996,6 +996,11 @@ public enum LangId
     QuickSetup_ConfirmCloseProcess_Description,
     #endregion // Quick setup
 
-
+    LiteGlass_AboutMaintainer,
+    LiteGlass_AiNotPdf,
+    LiteGlass_EpsNoPreview,
+    LiteGlass_DwgMissing,
+    LiteGlass_DwgTimeout,
+    LiteGlass_DwgFailed,
 }
 

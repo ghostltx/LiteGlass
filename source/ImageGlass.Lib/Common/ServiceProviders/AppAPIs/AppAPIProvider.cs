@@ -3326,10 +3326,10 @@ public partial class AppAPIProvider
     /// <summary>
     /// Open the Pro license window (Upgrade when unlicensed, Manage when licensed).
     /// </summary>
-    public static async Task IG_ManageLicenseAsync()
+    public static Task IG_ManageLicenseAsync()
     {
-        var dialog = new ManageLicenseWindow();
-        _ = await dialog.ShowAsync(App.MainWindow);
+        // LiteGlass has no license or purchase window.
+        return Task.CompletedTask;
     }
 
 
@@ -3503,7 +3503,7 @@ public partial class AppAPIProvider
     public static void IG_ReportIssue()
     {
         _ = BHelper.OpenUrlAsync(App.MainWindow,
-            "https://github.com/d2phap/ImageGlass/issues?q=is%3Aissue+",
+            "https://github.com/ghostltx/LiteGlass/issues",
             "from_report_issue");
     }
 

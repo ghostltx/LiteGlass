@@ -92,6 +92,18 @@ public partial class GeneralSettingsView : SettingsPageView
         // Others
         BindIntInput(PART_MsgDuration, ConfigId.InAppMessageDuration,
             LangId.Settings_InAppMessageDuration, LangId.Settings_Others);
+
+        PART_LangZh.Text = "简体中文";
+        PART_LangEn.Text = "English";
+    }
+
+
+    private async void LanguageButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var file = ReferenceEquals(sender, PART_LangZh)
+            ? LiteGlassLanguage.ChineseFile
+            : LiteGlassLanguage.EnglishFile;
+        await LiteGlassLanguage.ApplyAsync(file);
     }
 
 
@@ -151,7 +163,7 @@ public partial class GeneralSettingsView : SettingsPageView
     {
         try
         {
-            await BHelper.OpenUrlAsync(this, "https://imageglass.org/docs", $"from_setting_{NavId}");
+            await BHelper.OpenUrlAsync(this, LiteGlassLanguage.ProjectUrl, $"from_setting_{NavId}");
         }
         catch
         {
